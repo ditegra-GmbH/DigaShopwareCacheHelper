@@ -13,4 +13,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - initial version
 
 [Unreleased]: https://github.com/ditegra-GmbH/DigaShopwareCacheHelper 
-[1.0.0]: 
+[1.0.0]: https://github.com/ditegra-GmbH/DigaShopwareCacheHelper/releases/tag/v1.0.0
