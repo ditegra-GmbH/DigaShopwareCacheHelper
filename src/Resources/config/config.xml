@@ -5,11 +5,6 @@
     <card>
         <title>General</title>
         <title lang="de-DE">Allgemein</title>
-        <input-field type="bool">
-            <name>pluginactive</name>
-            <label>Active</label>
-            <label lang="de-DE">Aktiv</label>
-        </input-field>
 
         <component name="diga-info">
             <name>digaInfo</name>
