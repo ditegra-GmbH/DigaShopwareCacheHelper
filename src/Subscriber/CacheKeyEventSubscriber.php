@@ -49,16 +49,15 @@ class CacheKeyEventSubscriber implements EventSubscriberInterface
     public function onCacheTags(StoreApiRouteCacheTagsEvent $event): void
     {        
         try {
-            
+
             // $event->getContext()->getContext()->hasExtension("activePromotionsInfoListing")
             $tags = $event->getTags();
             $requestUri = $event->getRequest()->getRequestUri();
             
-            $this->logger->info('RequestUri: '. $requestUri .' CacheKeyEventSubscriber: onCacheTags: ' . json_encode($tags));
+            $this->logger->info('CacheTagsEvent - Tags: ' . json_encode($tags) . ' RequestUri: '. $requestUri);
 
         } catch (\Throwable $th) {       
             $this->logger->error( $th->getMessage());
-        } 
-
+        }
     }
 }
