@@ -1,0 +1,13 @@
+{
+    "diga-info": {
+        "help": "Help",
+        "documentation": "documentation", 
+        "feedback": "Feedback",
+        "feedbackText": "Would you like to give us your feedback and suggestions for improving the extension? Use our ",
+        "feedbackForm": "feedback form",
+        "helpText": "Need help getting set up? Here you go ",
+        "support":"Support",
+        "supportText":"Something is not working as expected? You can via your Shopware account ",
+        "supportLink":"create a ticket for us"
+    }
+}

@@ -1,0 +1,14 @@
+{% block diga_info_block %}
+    <div>
+        {% block diga_info_help_feedback_support %}
+            <sw-card> 
+                <h4 style="font-weight:bold;">{{$tc('diga-info.help')}} | {{$tc('diga-info.feedback')}} | {{$tc('diga-info.support')}}</h4>
+                <ul style="line-height: 200%; padding-left: 20px;">
+                    <li> <span v-html="$tc('diga-info.helpText')"></span><a href="https://ditegra.de/dokumentation/" rel="noopener" target="blank">{{$tc('diga-info.documentation')}}</a>.</li>
+                    <li><span v-html="$tc('diga-info.feedbackText')"></span><a href="https://forms.office.com/r/EJP4eeviEN" rel="noopener" target="blank">{{$tc('diga-info.feedbackForm')}}</a>.</li>
+                    <li><span v-html="$tc('diga-info.supportText')"></span><a href="https://account.shopware.com/shops/support" rel="noopener" target="blank">{{$tc('diga-info.supportLink')}}</a>.</li>
+                </ul>
+            </sw-card>
+        {% endblock %}
+    </div>
+{% endblock %}

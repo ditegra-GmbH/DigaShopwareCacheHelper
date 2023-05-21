@@ -1,0 +1,47 @@
+{
+  "name": "diga/shopwarecachehelper-plugin",
+  "description": "shopwarecachehelper Plugin",
+  "version": "v0.0.1",
+  "type": "shopware-platform-plugin",
+  "license": "proprietary",
+  "authors": [{
+    "name": "ditega GmbH"
+  }],
+  "autoload": {
+    "psr-4": {
+      "DigaShopwareCacheHelper\\": "src/"
+    }
+  },
+  "extra": {
+    "shopware-plugin-class": "DigaShopwareCacheHelper\\DigaShopwareCacheHelper",
+    "label": {
+      "de-DE": "Should help to debugg and investigate, understand shopware caching",
+      "en-GB": "Should help to debugg and investigate, understand shopware caching"
+    },
+    "copyright": "ditega GmbH",
+    "description": {
+      "de-DE": "Should help to debugg and investigate, understand shopware caching",
+      "en-GB": "Should help to debugg and investigate, understand shopware caching"
+    },
+    "manufacturerLink": {
+      "de-DE": "https://ditegra.de",
+      "en-GB": "https://ditegra.de"
+    },
+    "supportLink": {
+      "de-DE": "https://ditegra.de",
+      "en-GB": "https://ditegra.de"
+    }
+  },
+  "require": {
+    "php": ">= 7.4",
+    "shopware/core": "~6.4",
+    "shopware/storefront": "~6.4"
+  },
+  "require-dev": {
+      "phpunit/phpunit": "^9.5",
+      "phpstan/phpstan": "^1.8",
+      "friendsofphp/php-cs-fixer": "*",
+      "shopware/core": "*",
+      "shopware/storefront": "*"
+  }
+}
