@@ -1,7 +1,7 @@
 {
   "name": "diga/shopwarecachehelper-plugin",
   "description": "shopwarecachehelper Plugin",
-  "version": "v0.0.1",
+  "version": "v1.0.0",
   "type": "shopware-platform-plugin",
   "license": "proprietary",
   "authors": [{
@@ -20,8 +20,8 @@
     },
     "copyright": "ditega GmbH",
     "description": {
-      "de-DE": "Should help to debugg and investigate, understand shopware caching",
-      "en-GB": "Should help to debugg and investigate, understand shopware caching"
+      "de-DE": "Hilft bei der Fehlersuche und Untersuchung, versteht des Shopware Caching",
+      "en-GB": "helps to debugg and investigate, understand shopware caching"
     },
     "manufacturerLink": {
       "de-DE": "https://ditegra.de",
@@ -41,5 +41,10 @@
       "phpunit/phpunit": "^9.5",
       "phpstan/phpstan": "^1.8",
       "friendsofphp/php-cs-fixer": "*"
+  },
+  "config": {
+    "allow-plugins": {
+      "symfony/runtime": true
+    }
   }
 }

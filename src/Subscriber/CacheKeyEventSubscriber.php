@@ -9,6 +9,7 @@ use Shopware\Core\Framework\Adapter\Cache\StoreApiRouteCacheTagsEvent;
 use Shopware\Core\Content\Category\Event\NavigationRouteCacheTagsEvent;
 use Shopware\Core\Content\Product\Events\ProductDetailRouteCacheTagsEvent;
 use Shopware\Core\Content\LandingPage\Event\LandingPageRouteCacheTagsEvent;
+use Shopware\Core\Content\Product\Events\ProductListingRouteCacheTagsEvent;
 
 class CacheKeyEventSubscriber implements EventSubscriberInterface
 {

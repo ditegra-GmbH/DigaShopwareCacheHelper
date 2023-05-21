@@ -9,10 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Removed
 
-## [1.0.0] - 2021-mm-dd
-### Added
-### Changed
-### Removed
+## [1.0.0] - 21.05.2023
+- initial version
 
-[Unreleased]: URL to git Repo here
-[1.0.0]: URL to git Repo here
+[Unreleased]: https://github.com/ditegra-GmbH/DigaShopwareCacheHelper 
+[1.0.0]: 

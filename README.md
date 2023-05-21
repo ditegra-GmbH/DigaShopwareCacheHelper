@@ -1,33 +1,32 @@
 # DigaShopwareCacheHelper
-_One-liner explaining the purpose of the product_
+Shopware Cache helper
 
 ## Description:
-_Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor._
+The Cache Helper diligently logs a multitude of events. This not only simplifies the debugging process, but also fosters a deeper understanding of operations occurring during cache writes and invalidations. It provides clear insights into which tags have been written and which ones have been invalidated.
 
 ## Highlights:
--
-- 
-- 
+- Logs multiple CacheTagsEvent(s)
+- Logs CacheItemWritten
+- Logs CacheHit
+- Logs InvalidateCache
 
 ## Features:
--
--
--
+- writes the logs to default shopware var/log folder
+- usefull in production mode
 
 ## Installation manual:
-_Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor._
+Install and activate
 
 ## Supported SW Version:
-_Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor._
+sw 6.4.x
 
 ## Dependencies:
-_Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor._
+none
 
 ## testing 
 - e2e testing with playwight see [README.md](tests/e2e/README.md)
 
 ## Technical concept:
-_Link:_
 
 ## License
 Copyright 2022 ditegra GmbH
