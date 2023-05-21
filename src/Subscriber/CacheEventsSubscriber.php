@@ -34,7 +34,6 @@ class CacheEventsSubscriber implements EventSubscriberInterface
         try {
             $requestUri = $event->getRequest()->getRequestUri();
             $itemKey = $event->getItem()->getKey();        
-            $this->logger->info('');
             $this->logger->info('CacheHitEvent ItemKey: ' . $itemKey . ' RequestUri: '. $requestUri);
         } catch (\Throwable $th) {       
             $this->logger->error( $th->getMessage());
