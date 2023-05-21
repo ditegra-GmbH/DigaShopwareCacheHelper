@@ -15,8 +15,8 @@
   "extra": {
     "shopware-plugin-class": "DigaShopwareCacheHelper\\DigaShopwareCacheHelper",
     "label": {
-      "de-DE": "Should help to debugg and investigate, understand shopware caching",
-      "en-GB": "Should help to debugg and investigate, understand shopware caching"
+      "de-DE": "Cache Helper",
+      "en-GB": "Cache Helper"
     },
     "copyright": "ditega GmbH",
     "description": {
@@ -40,8 +40,6 @@
   "require-dev": {
       "phpunit/phpunit": "^9.5",
       "phpstan/phpstan": "^1.8",
-      "friendsofphp/php-cs-fixer": "*",
-      "shopware/core": "*",
-      "shopware/storefront": "*"
+      "friendsofphp/php-cs-fixer": "*"
   }
 }

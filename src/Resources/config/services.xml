@@ -5,6 +5,20 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="DigaShopwareCacheHelper\Util\Logger" class="Monolog\Logger">
+            <factory service="Shopware\Core\Framework\Log\LoggerFactory" method="createRotating"/>
+            <argument type="string">diga_cache_helper</argument>
+        </service>
+
+        <service id="DigaShopwareCacheHelper\Subscriber\CacheKeyEventSubscriber">
+            <argument type="service" id="DigaShopwareCacheHelper\Util\Logger"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="DigaShopwareCacheHelper\Subscriber\CacheEventsSubscriber">
+            <argument type="service" id="DigaShopwareCacheHelper\Util\Logger"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
 
     </services>
 </container>
