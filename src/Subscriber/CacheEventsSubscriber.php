@@ -3,12 +3,10 @@
 namespace DigaShopwareCacheHelper\Subscriber;
 
 use Psr\Log\LoggerInterface;
-use Psr\Cache\CacheItemInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Shopware\Core\Framework\Adapter\Cache\InvalidateCacheEvent;
 use Shopware\Storefront\Framework\Cache\Event\HttpCacheHitEvent;
-
+use Shopware\Storefront\Framework\Cache\Event\HttpCacheItemWrittenEvent;
 
 class CacheEventsSubscriber implements EventSubscriberInterface
 {
@@ -25,20 +23,47 @@ class CacheEventsSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array 
     {
         return [
-            HttpCacheHitEvent::class => 'onCacheHit'
+            HttpCacheItemWrittenEvent::class => 'onCacheItemWritten',
+            HttpCacheHitEvent::class => 'onCacheHit',
+            InvalidateCacheEvent::class => 'onInvalidateCache'
         ];
     }
 
-    public function onCacheHit(CacheItemInterface $item, Request $request, Response $response): void
+    public function onCacheHit(HttpCacheHitEvent $event): void
     {
         try {
-
-            $requestUri = $request->getRequestUri();
-            $itemKey = $item->getKey();        
-            $this->logger->info('RequestUri: '. $requestUri .' ItemKey: ' . $itemKey);
-
+            $requestUri = $event->getRequest()->getRequestUri();
+            $itemKey = $event->getItem()->getKey();        
+            $this->logger->info('');
+            $this->logger->info('CacheHitEvent ItemKey: ' . $itemKey . ' RequestUri: '. $requestUri);
         } catch (\Throwable $th) {       
             $this->logger->error( $th->getMessage());
         }        
+    }
+
+    public function onCacheItemWritten(HttpCacheItemWrittenEvent $event): void
+    {
+        try {
+            
+            $requestUri = $event->getRequest()->getRequestUri();
+            $itemKey = $event->getItem()->getKey();        
+            $tags = $event->getTags();
+            $this->logger->info('CacheItemWrittenEvent ItemKey: ' . $itemKey . ' Tags: ' .  json_encode($tags) . ' RequestUri: '. $requestUri);
+
+        } catch (\Throwable $th) {
+            $this->logger->error( $th->getMessage());
+        }
+    }
+
+    public function onInvalidateCache(InvalidateCacheEvent $event): void
+    {
+        try {
+
+            $keys = $event->getKeys();
+            $this->logger->info('InvalidateCacheEvent keys: ' .  json_encode($keys) );
+
+        } catch (\Throwable $th) {
+            $this->logger->error( $th->getMessage());
+        }
     }
 }
