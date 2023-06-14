@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Removed
 
+## [1.0.1] - 16.06.2023
+- add more configuration ways so user can decide what he really wants to log
+
 ## [1.0.0] - 21.05.2023
 - initial version
 
