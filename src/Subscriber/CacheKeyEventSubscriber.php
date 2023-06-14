@@ -69,10 +69,11 @@ class CacheKeyEventSubscriber implements EventSubscriberInterface
         try {
 
             $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
-            $eventClass = end(explode('\\', get_class($event)));
+            $parts = explode('\\', get_class($event));
+            $eventClass = array_pop($parts);
 
             // if $eventClass exist in $selectedCacheTagEvents array 
-            if(!in_array($eventClass, $selectedCacheTagEvents)) {
+            if(is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
                 return;
             }
 
