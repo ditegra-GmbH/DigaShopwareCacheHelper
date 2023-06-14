@@ -9,5 +9,97 @@
         <component name="diga-info">
             <name>digaInfo</name>
         </component>
+
+        <input-field type="bool">
+            <name>logOnCacheHit</name>
+            <label>Log onCacheHit</label>
+        </input-field>
+
+        <input-field type="bool">
+            <name>logOnCacheItemWritten</name>
+            <label>Log onCacheItemWritten</label>
+        </input-field>
+
+        <input-field type="bool">
+            <name>logInvalidateCache</name>
+            <label>Log InvalidateCache</label>
+        </input-field>
+
+        <input-field type="multi-select">
+            <name>selectedCacheTagEvents</name>
+            <label>Select which Cache Tag Event should be logged</label>
+            <options>
+                <option>
+                    <id>PaymentMethodRouteCacheTagsEvent</id>
+                    <name>PaymentMethodRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>ShippingMethodRouteCacheTagsEvent</id>
+                    <name>ShippingMethodRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>CategoryRouteCacheTagsEvent</id>
+                    <name>CategoryRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>NavigationRouteCacheTagsEvent</id>
+                    <name>NavigationRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>LandingPageRouteCacheTagsEvent</id>
+                    <name>LandingPageRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>CrossSellingRouteCacheTagsEvent</id>
+                    <name>CrossSellingRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>ProductDetailRouteCacheTagsEvent</id>
+                    <name>ProductDetailRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>ProductListingRouteCacheTagsEvent</id>
+                    <name>ProductListingRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>ProductSearchRouteCacheTagsEvent</id>
+                    <name>ProductSearchRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>ProductSuggestRouteCacheTagsEvent</id>
+                    <name>ProductSuggestRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>SitemapRouteCacheTagsEvent</id>
+                    <name>SitemapRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>StoreApiRouteCacheTagsEvent</id>
+                    <name>StoreApiRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>CountryRouteCacheTagsEvent</id>
+                    <name>CountryRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>CountryStateRouteCacheTagsEvent</id>
+                    <name>CountryStateRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>CurrencyRouteCacheTagsEvent</id>
+                    <name>CurrencyRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>LanguageRouteCacheTagsEvent</id>
+                    <name>LanguageRouteCacheTagsEvent</name>
+                </option>
+                <option>
+                    <id>SalutationRouteCacheTagsEvent</id>
+                    <name>SalutationRouteCacheTagsEvent</name>
+                </option>
+            </options>
+            <defaultValue>["NavigationRouteCacheTagsEvent", "CategoryRouteCacheTagsEvent", "LandingPageRouteCacheTagsEvent", "ProductDetailRouteCacheTagsEvent", "ProductListingRouteCacheTagsEvent"]</defaultValue>
+        </input-field>
+
     </card>
 </config>

@@ -7,6 +7,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Shopware\Core\Framework\Adapter\Cache\InvalidateCacheEvent;
 use Shopware\Storefront\Framework\Cache\Event\HttpCacheHitEvent;
 use Shopware\Storefront\Framework\Cache\Event\HttpCacheItemWrittenEvent;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 
 class CacheEventsSubscriber implements EventSubscriberInterface
 {
@@ -15,9 +16,15 @@ class CacheEventsSubscriber implements EventSubscriberInterface
     */
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    /**
+     * @var SystemConfigService
+     */
+    private $systemConfigService;
+
+    public function __construct(LoggerInterface $logger, SystemConfigService $systemConfigService)
     {
         $this->logger = $logger;
+        $this->systemConfigService = $systemConfigService;
     }
 
     public static function getSubscribedEvents(): array 
@@ -32,9 +39,15 @@ class CacheEventsSubscriber implements EventSubscriberInterface
     public function onCacheHit(HttpCacheHitEvent $event): void
     {
         try {
-            $requestUri = $event->getRequest()->getRequestUri();
-            $itemKey = $event->getItem()->getKey();        
-            $this->logger->info('CacheHitEvent ItemKey: ' . $itemKey . ' RequestUri: '. $requestUri);
+                         
+            $logOnCacheHit = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logOnCacheHit');
+
+            if($logOnCacheHit){
+                $requestUri = $event->getRequest()->getRequestUri();
+                $itemKey = $event->getItem()->getKey();        
+                $this->logger->info('CacheHitEvent ItemKey: ' . $itemKey . ' RequestUri: '. $requestUri);
+            }
+            
         } catch (\Throwable $th) {       
             $this->logger->error( $th->getMessage());
         }        
@@ -43,11 +56,14 @@ class CacheEventsSubscriber implements EventSubscriberInterface
     public function onCacheItemWritten(HttpCacheItemWrittenEvent $event): void
     {
         try {
-            
-            $requestUri = $event->getRequest()->getRequestUri();
-            $itemKey = $event->getItem()->getKey();        
-            $tags = $event->getTags();
-            $this->logger->info('CacheItemWrittenEvent ItemKey: ' . $itemKey . ' Tags: ' .  json_encode($tags) . ' RequestUri: '. $requestUri);
+            $logOnCacheItemWritten = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logOnCacheItemWritten');
+
+            if($logOnCacheItemWritten){
+                $requestUri = $event->getRequest()->getRequestUri();
+                $itemKey = $event->getItem()->getKey();        
+                $tags = $event->getTags();
+                $this->logger->info('CacheItemWrittenEvent ItemKey: ' . $itemKey . ' Tags: ' .  json_encode($tags) . ' RequestUri: '. $requestUri);
+            }
 
         } catch (\Throwable $th) {
             $this->logger->error( $th->getMessage());
@@ -57,9 +73,12 @@ class CacheEventsSubscriber implements EventSubscriberInterface
     public function onInvalidateCache(InvalidateCacheEvent $event): void
     {
         try {
+            $logInvalidateCache = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logInvalidateCache');
 
-            $keys = $event->getKeys();
-            $this->logger->info('InvalidateCacheEvent keys: ' .  json_encode($keys) );
+            if($logInvalidateCache){
+                $keys = $event->getKeys();
+                $this->logger->info('InvalidateCacheEvent keys: ' .  json_encode($keys));
+            }
 
         } catch (\Throwable $th) {
             $this->logger->error( $th->getMessage());

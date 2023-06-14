@@ -3,13 +3,25 @@
 namespace DigaShopwareCacheHelper\Subscriber;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Shopware\Core\System\Country\Event\CountryRouteCacheTagsEvent;
+use Shopware\Core\Content\Sitemap\Event\SitemapRouteCacheTagsEvent;
+use Shopware\Core\System\Currency\Event\CurrencyRouteCacheTagsEvent;
+use Shopware\Core\System\Language\Event\LanguageRouteCacheTagsEvent;
 use Shopware\Core\Content\Category\Event\CategoryRouteCacheTagsEvent;
 use Shopware\Core\Framework\Adapter\Cache\StoreApiRouteCacheTagsEvent;
 use Shopware\Core\Content\Category\Event\NavigationRouteCacheTagsEvent;
+use Shopware\Core\System\Country\Event\CountryStateRouteCacheTagsEvent;
+use Shopware\Core\System\Salutation\Event\SalutationRouteCacheTagsEvent;
+use Shopware\Core\Content\Product\Events\CrossSellingRouteCacheTagsEvent;
+use Shopware\Core\Checkout\Payment\Event\PaymentMethodRouteCacheTagsEvent;
 use Shopware\Core\Content\Product\Events\ProductDetailRouteCacheTagsEvent;
+use Shopware\Core\Content\Product\Events\ProductSearchRouteCacheTagsEvent;
 use Shopware\Core\Content\LandingPage\Event\LandingPageRouteCacheTagsEvent;
 use Shopware\Core\Content\Product\Events\ProductListingRouteCacheTagsEvent;
+use Shopware\Core\Content\Product\Events\ProductSuggestRouteCacheTagsEvent;
+use Shopware\Core\Checkout\Shipping\Event\ShippingMethodRouteCacheTagsEvent;
 
 class CacheKeyEventSubscriber implements EventSubscriberInterface
 {
@@ -18,32 +30,37 @@ class CacheKeyEventSubscriber implements EventSubscriberInterface
     */
     private $logger;
 
-    public function __construct(LoggerInterface $logger)
+    /**
+     * @var SystemConfigService
+     */
+    private $systemConfigService;
+
+    public function __construct(LoggerInterface $logger, SystemConfigService $systemConfigService)
     {
         $this->logger = $logger;
+        $this->systemConfigService = $systemConfigService;
     }
 
     public static function getSubscribedEvents(): array 
     {
-        return [
+        return [                       
+            PaymentMethodRouteCacheTagsEvent::class => 'onCacheTags',
+            ShippingMethodRouteCacheTagsEvent::class => 'onCacheTags',
             CategoryRouteCacheTagsEvent::class => 'onCacheTags',
             NavigationRouteCacheTagsEvent::class => 'onCacheTags',
             LandingPageRouteCacheTagsEvent::class => 'onCacheTags',
+            CrossSellingRouteCacheTagsEvent::class => 'onCacheTags',
             ProductDetailRouteCacheTagsEvent::class => 'onCacheTags',
-            ProductListingRouteCacheTagsEvent::class => 'onCacheTags'
-            // ProductSearchRouteCacheTagsEvent::class => 'onCacheTags',
-            // CrossSellingRouteCacheTagsEvent::class => 'onCacheTags',
-            // PaymentMethodRouteCacheTagsEvent::class => 'onCacheTags',
-            // ShippingMethodRouteCacheTagsEvent::class => 'onCacheTags',
-            // ProductSuggestRouteCacheTagsEvent::class => 'onCacheTags',
-            // SitemapRouteCacheTagsEvent::class => 'onCacheTags',
-            // CountryRouteCacheTagsEvent::class => 'onCacheTags',
-            // CountryStateRouteCacheTagsEvent::class => 'onCacheTags',
-            // CurrencyRouteCacheTagsEvent::class => 'onCacheTags',
-            // LanguageRouteCacheTagsEvent::class => 'onCacheTags',
-            // SalutationRouteCacheTagsEvent::class => 'onCacheTags',
-            //TODO: what aout all the other page types and events?
-            // all which extends => extends StoreApiRouteCacheTagsEvent
+            ProductListingRouteCacheTagsEvent::class => 'onCacheTags',
+            ProductSearchRouteCacheTagsEvent::class => 'onCacheTags',
+            ProductSuggestRouteCacheTagsEvent::class => 'onCacheTags',
+            SitemapRouteCacheTagsEvent::class => 'onCacheTags',
+            StoreApiRouteCacheTagsEvent::class => 'onCacheTags',
+            CountryRouteCacheTagsEvent::class => 'onCacheTags',
+            CountryStateRouteCacheTagsEvent::class => 'onCacheTags',
+            CurrencyRouteCacheTagsEvent::class => 'onCacheTags',
+            LanguageRouteCacheTagsEvent::class => 'onCacheTags',
+            SalutationRouteCacheTagsEvent::class => 'onCacheTags'
         ];
     }
 
@@ -51,7 +68,14 @@ class CacheKeyEventSubscriber implements EventSubscriberInterface
     {        
         try {
 
-            // $event->getContext()->getContext()->hasExtension("activePromotionsInfoListing")
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $eventClass = end(explode('\\', get_class($event)));
+
+            // if $eventClass exist in $selectedCacheTagEvents array 
+            if(!in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
             $tags = $event->getTags();
             $requestUri = $event->getRequest()->getRequestUri();
             
