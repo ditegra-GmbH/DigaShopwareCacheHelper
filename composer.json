@@ -34,8 +34,8 @@
   },
   "require": {
     "php": ">= 7.4",
-    "shopware/core": "~6.4",
-    "shopware/storefront": "~6.4"
+    "shopware/core": "~6.4 <6.5",
+    "shopware/storefront": "~6.4 <6.5"
   },
   "require-dev": {
       "phpunit/phpunit": "^9.5",
