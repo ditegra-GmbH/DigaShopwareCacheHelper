@@ -16,6 +16,12 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
+        <service id="DigaShopwareCacheHelper\Subscriber\CacheTagEventSubscriber">
+            <argument type="service" id="DigaShopwareCacheHelper\Util\Logger"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
         <service id="DigaShopwareCacheHelper\Subscriber\CacheEventsSubscriber">
             <argument type="service" id="DigaShopwareCacheHelper\Util\Logger"/>
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>

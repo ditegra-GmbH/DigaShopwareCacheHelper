@@ -5,23 +5,24 @@ namespace DigaShopwareCacheHelper\Subscriber;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Shopware\Core\System\Country\Event\CountryRouteCacheTagsEvent;
-use Shopware\Core\Content\Sitemap\Event\SitemapRouteCacheTagsEvent;
-use Shopware\Core\System\Currency\Event\CurrencyRouteCacheTagsEvent;
-use Shopware\Core\System\Language\Event\LanguageRouteCacheTagsEvent;
-use Shopware\Core\Content\Category\Event\CategoryRouteCacheTagsEvent;
-use Shopware\Core\Framework\Adapter\Cache\StoreApiRouteCacheTagsEvent;
-use Shopware\Core\Content\Category\Event\NavigationRouteCacheTagsEvent;
-use Shopware\Core\System\Country\Event\CountryStateRouteCacheTagsEvent;
-use Shopware\Core\System\Salutation\Event\SalutationRouteCacheTagsEvent;
-use Shopware\Core\Content\Product\Events\CrossSellingRouteCacheTagsEvent;
-use Shopware\Core\Checkout\Payment\Event\PaymentMethodRouteCacheTagsEvent;
-use Shopware\Core\Content\Product\Events\ProductDetailRouteCacheTagsEvent;
-use Shopware\Core\Content\Product\Events\ProductSearchRouteCacheTagsEvent;
-use Shopware\Core\Content\LandingPage\Event\LandingPageRouteCacheTagsEvent;
-use Shopware\Core\Content\Product\Events\ProductListingRouteCacheTagsEvent;
-use Shopware\Core\Content\Product\Events\ProductSuggestRouteCacheTagsEvent;
-use Shopware\Core\Checkout\Shipping\Event\ShippingMethodRouteCacheTagsEvent;
+use Shopware\Core\System\Country\Event\CountryRouteCacheKeyEvent;
+use Shopware\Core\Content\Sitemap\Event\SitemapRouteCacheKeyEvent;
+use Shopware\Core\System\Currency\Event\CurrencyRouteCacheKeyEvent;
+use Shopware\Core\System\Language\Event\LanguageRouteCacheKeyEvent;
+use Shopware\Core\Content\Category\Event\CategoryRouteCacheKeyEvent;
+use Shopware\Core\Framework\Adapter\Cache\StoreApiRouteCacheKeyEvent;
+use Shopware\Core\Content\Category\Event\NavigationRouteCacheKeyEvent;
+use Shopware\Core\System\Country\Event\CountryStateRouteCacheKeyEvent;
+use Shopware\Core\System\Salutation\Event\SalutationRouteCacheKeyEvent;
+use Shopware\Core\Content\Product\Events\CrossSellingRouteCacheKeyEvent;
+use Shopware\Core\Checkout\Payment\Event\PaymentMethodRouteCacheKeyEvent;
+use Shopware\Core\Content\Product\Events\ProductDetailRouteCacheKeyEvent;
+use Shopware\Core\Content\Product\Events\ProductSearchRouteCacheKeyEvent;
+use Shopware\Core\Content\LandingPage\Event\LandingPageRouteCacheKeyEvent;
+use Shopware\Core\Content\Product\Events\ProductListingRouteCacheKeyEvent;
+use Shopware\Core\Content\Product\Events\ProductSuggestRouteCacheKeyEvent;
+use Shopware\Core\Checkout\Shipping\Event\ShippingMethodRouteCacheKeyEvent;
+use Shopware\Core\Framework\DataAbstractionLayer\FieldSerializer\JsonFieldSerializer;
 
 class CacheKeyEventSubscriber implements EventSubscriberInterface
 {
@@ -44,27 +45,27 @@ class CacheKeyEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array 
     {
         return [                       
-            PaymentMethodRouteCacheTagsEvent::class => 'onCacheTags',
-            ShippingMethodRouteCacheTagsEvent::class => 'onCacheTags',
-            CategoryRouteCacheTagsEvent::class => 'onCacheTags',
-            NavigationRouteCacheTagsEvent::class => 'onCacheTags',
-            LandingPageRouteCacheTagsEvent::class => 'onCacheTags',
-            CrossSellingRouteCacheTagsEvent::class => 'onCacheTags',
-            ProductDetailRouteCacheTagsEvent::class => 'onCacheTags',
-            ProductListingRouteCacheTagsEvent::class => 'onCacheTags',
-            ProductSearchRouteCacheTagsEvent::class => 'onCacheTags',
-            ProductSuggestRouteCacheTagsEvent::class => 'onCacheTags',
-            SitemapRouteCacheTagsEvent::class => 'onCacheTags',
-            StoreApiRouteCacheTagsEvent::class => 'onCacheTags',
-            CountryRouteCacheTagsEvent::class => 'onCacheTags',
-            CountryStateRouteCacheTagsEvent::class => 'onCacheTags',
-            CurrencyRouteCacheTagsEvent::class => 'onCacheTags',
-            LanguageRouteCacheTagsEvent::class => 'onCacheTags',
-            SalutationRouteCacheTagsEvent::class => 'onCacheTags'
+            PaymentMethodRouteCacheKeyEvent::class => 'onCacheKey',
+            ShippingMethodRouteCacheKeyEvent::class => 'onCacheKey',
+            CategoryRouteCacheKeyEvent::class => 'onCacheKey',
+            NavigationRouteCacheKeyEvent::class => 'onCacheKey',
+            LandingPageRouteCacheKeyEvent::class => 'onCacheKey',
+            CrossSellingRouteCacheKeyEvent::class => 'onCacheKey',
+            ProductDetailRouteCacheKeyEvent::class => 'onCacheKey',
+            ProductListingRouteCacheKeyEvent::class => 'onCacheKey',
+            ProductSearchRouteCacheKeyEvent::class => 'onCacheKey',
+            ProductSuggestRouteCacheKeyEvent::class => 'onCacheKey',
+            SitemapRouteCacheKeyEvent::class => 'onCacheKey',
+            CountryRouteCacheKeyEvent::class => 'onCacheKey',
+            CountryStateRouteCacheKeyEvent::class => 'onCacheKey',
+            CurrencyRouteCacheKeyEvent::class => 'onCacheKey',
+            LanguageRouteCacheKeyEvent::class => 'onCacheKey',
+            SalutationRouteCacheKeyEvent::class => 'onCacheKey',
+            // StoreApiRouteCacheKeyEvent::class => 'onCacheKey'
         ];
     }
 
-    public function onCacheTags(StoreApiRouteCacheTagsEvent $event): void
+    public function onCacheKey(StoreApiRouteCacheKeyEvent $event): void
     {        
         try {
 
@@ -77,10 +78,81 @@ class CacheKeyEventSubscriber implements EventSubscriberInterface
                 return;
             }
 
-            $tags = $event->getTags();
+            $parts = $event->getParts();
+            $key = '';
+
+            if($event instanceof StoreApiRouteCacheKeyEvent){
+                $key = 'payment-method-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof PaymentMethodRouteCacheKeyEvent){
+                $key = 'payment-method-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof ShippingMethodRouteCacheKeyEvent){
+                $key = 'shipping-method-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof CategoryRouteCacheKeyEvent){
+                $key = 'category-route-' . $event->getNavigationId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof NavigationRouteCacheKeyEvent){
+                $key = 'navigation-route-' . $event->getActive(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof LandingPageRouteCacheKeyEvent){
+                $key = 'landing-page-route-' . $event->getLandingPageId() . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof CrossSellingRouteCacheKeyEvent){
+                $key = 'cross-selling-route-' . $event->getProductId() . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof ProductDetailRouteCacheKeyEvent){
+                $key = 'product-detail-route-' . 'prodid-should-be-here' . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof ProductListingRouteCacheKeyEvent){
+                $key = 'product-listing-route-' . $event->getCategoryId() . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof ProductSearchRouteCacheKeyEvent){
+                $key = 'product-search-route' . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof ProductSuggestRouteCacheKeyEvent){
+                
+                $key = 'product-suggest-route' . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof SitemapRouteCacheKeyEvent){
+                $key = 'sitemap-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof CountryRouteCacheKeyEvent){
+                $key = 'country-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof CountryStateRouteCacheKeyEvent){
+                $key = 'country-state-route-' . 'countryid-should-be-here' . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof CurrencyRouteCacheKeyEvent){
+                $key = 'currency-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof LanguageRouteCacheKeyEvent){
+                $key = 'language-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+
+            if($event instanceof SalutationRouteCacheKeyEvent){
+                $key = 'salutation-route' . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
+            }
+                        
             $requestUri = $event->getRequest()->getRequestUri();
             
-            $this->logger->info('CacheTagsEvent - Tags: ' . json_encode($tags) . ' RequestUri: '. $requestUri);
+            $this->logger->info($eventClass . ' - Key: ' . $key . ' Parts ' . json_encode($parts) .  ' RequestUri: '. $requestUri);
 
         } catch (\Throwable $th) {       
             $this->logger->error( $th->getMessage());

@@ -101,5 +101,82 @@
             <defaultValue>["NavigationRouteCacheTagsEvent", "CategoryRouteCacheTagsEvent", "LandingPageRouteCacheTagsEvent", "ProductDetailRouteCacheTagsEvent", "ProductListingRouteCacheTagsEvent"]</defaultValue>
         </input-field>
 
+        <input-field type="multi-select">
+            <name>selectedCacheKeyEvents</name>
+            <label>Select which Cache Key Event should be logged</label>
+            <options>
+                <option>
+                    <id>PaymentMethodRouteCacheKeyEvent</id>
+                    <name>PaymentMethodRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>ShippingMethodRouteCacheKeyEvent</id>
+                    <name>ShippingMethodRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>CategoryRouteCacheKeyEvent</id>
+                    <name>CategoryRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>NavigationRouteCacheKeyEvent</id>
+                    <name>NavigationRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>LandingPageRouteCacheKeyEvent</id>
+                    <name>LandingPageRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>CrossSellingRouteCacheKeyEvent</id>
+                    <name>CrossSellingRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>ProductDetailRouteCacheKeyEvent</id>
+                    <name>ProductDetailRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>ProductListingRouteCacheKeyEvent</id>
+                    <name>ProductListingRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>ProductSearchRouteCacheKeyEvent</id>
+                    <name>ProductSearchRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>ProductSuggestRouteCacheKeyEvent</id>
+                    <name>ProductSuggestRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>SitemapRouteCacheKeyEvent</id>
+                    <name>SitemapRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>StoreApiRouteCacheKeyEvent</id>
+                    <name>StoreApiRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>CountryRouteCacheKeyEvent</id>
+                    <name>CountryRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>CountryStateRouteCacheKeyEvent</id>
+                    <name>CountryStateRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>CurrencyRouteCacheKeyEvent</id>
+                    <name>CurrencyRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>LanguageRouteCacheKeyEvent</id>
+                    <name>LanguageRouteCacheKeyEvent</name>
+                </option>
+                <option>
+                    <id>SalutationRouteCacheKeyEvent</id>
+                    <name>SalutationRouteCacheKeyEvent</name>
+                </option>
+            </options>
+            <defaultValue>["NavigationRouteCacheKeyEvent", "CategoryRouteCacheKeyEvent", "LandingPageRouteCacheKeyEvent", "ProductDetailRouteCacheKeyEvent", "ProductListingRouteCacheKeyEvent"]</defaultValue>
+        </input-field>
+
+
     </card>
 </config>
