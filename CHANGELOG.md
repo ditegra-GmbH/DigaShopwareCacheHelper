@@ -9,8 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Removed
 
-
 ## [1.0.2] - 16.06.2023
+- add config to disable tags logging on cache item generated
+- add ttl and maxage output
 - onCacheTags log the class type generating the tags
 - add StoreApiRouteCacheKeyEvent logging
 
@@ -23,3 +24,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [Unreleased]: https://github.com/ditegra-GmbH/DigaShopwareCacheHelper 
 [1.0.0]: https://github.com/ditegra-GmbH/DigaShopwareCacheHelper/releases/tag/v1.0.0
 [1.0.1]: https://github.com/ditegra-GmbH/DigaShopwareCacheHelper/releases/tag/v1.0.1
+[1.0.2]: https://github.com/ditegra-GmbH/DigaShopwareCacheHelper/releases/tag/v1.0.2

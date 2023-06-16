@@ -13,17 +13,32 @@
         <input-field type="bool">
             <name>logOnCacheHit</name>
             <label>Log onCacheHit</label>
+            <defaultValue>true</defaultValue>
         </input-field>
 
         <input-field type="bool">
             <name>logOnCacheItemWritten</name>
             <label>Log onCacheItemWritten</label>
+            <defaultValue>true</defaultValue>
+        </input-field>
+
+        <input-field type="bool">
+            <name>logTagsOnCacheItemWritten</name>
+            <label>Log Tags onCacheItemWritten</label>
+            <defaultValue>false</defaultValue>
         </input-field>
 
         <input-field type="bool">
             <name>logInvalidateCache</name>
             <label>Log InvalidateCache</label>
+            <defaultValue>true</defaultValue>
         </input-field>
+
+        <input-field type="bool">
+            <name>logHttpCacheGenerateKeyEvent</name>
+            <label>Log HttpCacheGenerateKeyEvent</label>
+            <defaultValue>false</defaultValue>
+        </input-field>        
 
         <input-field type="multi-select">
             <name>selectedCacheTagEvents</name>
