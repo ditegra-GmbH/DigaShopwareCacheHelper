@@ -11,17 +11,19 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Shopware\Core\Framework\Adapter\Cache\CacheIdLoader;
+use Shopware\Core\System\SalesChannel\SalesChannelEntity;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Storefront\Framework\Cache\CacheWarmer\CacheRouteWarmerRegistry;
 use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainEntity;
+use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelDomainCollection;
 
 class DigaHttpCacheWarmUpCommand extends Command
 {
 
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     private $salesChannelRepository;
 
@@ -42,8 +44,7 @@ class DigaHttpCacheWarmUpCommand extends Command
     /**
      * @internal
      */
-    public function __construct(     
-        EntityRepository $domainRepository, 
+    public function __construct(
         EntityRepository $salesChannelRepository,
         CacheIdLoader $cacheIdLoader,
         MessageBusInterface $bus,
@@ -81,6 +82,7 @@ class DigaHttpCacheWarmUpCommand extends Command
         $activeSalesChannels = $this->salesChannelRepository->search($criteria, Context::createDefaultContext());
 
         $activeDomains = [];
+        /** @var SalesChannelEntity $activeSalesChannel */
         foreach($activeSalesChannels as $activeSalesChannel) {
             $typeId = $activeSalesChannel->getTypeId();
             if(strtoupper($typeId) != strtoupper('8a243080f92e4c719546314b577cf82b')) {
@@ -104,13 +106,16 @@ class DigaHttpCacheWarmUpCommand extends Command
         return self::SUCCESS;
     }
 
-    private function createMessages(string $cacheId, array $domains, string $routeWarmer): void
+    /**
+     * @param array<SalesChannelDomainEntity> $domains
+     */
+    private function createMessages(string $cacheId, $domains, string $routeWarmer): void
     {
         /** @var SalesChannelDomainEntity $domain */
         foreach ($domains as $domain) {
             foreach ($this->registry->getWarmers() as $warmer) {
 
-                if(!is_null($routeWarmer)) {       
+                if(!empty($routeWarmer)) {
                     $parts = explode('\\', get_class($warmer));
                     $warmerClass = array_pop($parts);
 

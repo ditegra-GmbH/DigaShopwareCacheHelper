@@ -3,7 +3,7 @@
 namespace DigaShopwareCacheHelper\Subscriber;
 
 use Psr\Log\LoggerInterface;
-use Shopware\Recovery\Common\HttpClient\Response;
+use Symfony\Component\HttpFoundation\Response;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Framework\Adapter\Cache\InvalidateCacheEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -48,8 +48,7 @@ class CacheEventsSubscriber implements EventSubscriberInterface
             if($logOnCacheHit){
                 $requestUri = $event->getRequest()->getRequestUri();
                 $itemKey = $event->getItem()->getKey();        
-
-                /** @var Response $response */                
+          
                 $ttl = $event->getResponse()->getTtl();
                 $maxAge = $event->getResponse()->getMaxAge();
 
@@ -71,8 +70,7 @@ class CacheEventsSubscriber implements EventSubscriberInterface
                 $requestUri = $event->getRequest()->getRequestUri();
                 $itemKey = $event->getItem()->getKey();        
                 $tags = $event->getTags();
-    
-                /** @var Response $response */                
+       
                 $ttl = $event->getResponse()->getTtl();
                 $maxAge = $event->getResponse()->getMaxAge();
                 
