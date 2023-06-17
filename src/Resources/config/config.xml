@@ -40,6 +40,12 @@
             <defaultValue>false</defaultValue>
         </input-field>        
 
+        <input-field type="bool">
+            <name>logCacheWarmup</name>
+            <label>Log Cache Warmup URLs</label>
+            <defaultValue>false</defaultValue>
+        </input-field>
+        
         <input-field type="multi-select">
             <name>selectedCacheTagEvents</name>
             <label>Select which Cache Tag Event should be logged</label>
