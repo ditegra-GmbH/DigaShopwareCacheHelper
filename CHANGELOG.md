@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Removed
 
-## [1.0.3] - 17.06.2023
+## [1.0.2] - 17.06.2023
 - add warmup message handler to log which urls are warmed up during http:cache:warm:up  
 
 ## [1.0.2] - 16.06.2023
