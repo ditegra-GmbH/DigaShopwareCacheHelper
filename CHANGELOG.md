@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ## [1.0.2] - 17.06.2023
+- add command to be able to warmup cache just for active domains and selected warmer (category or products)
 - add warmup message handler to log which urls are warmed up during http:cache:warm:up  
 
 ## [1.0.2] - 16.06.2023
