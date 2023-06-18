@@ -99,6 +99,8 @@ class DigaHttpCacheWarmUpCommand extends Command
         $this->cacheIdLoader->write($cacheId);
 
         $routeWarmer = $input->getArgument('warmer');
+        if(!$routeWarmer)
+            $routeWarmer = '';
 
         // generate all message to calculate message count
         $this->createMessages($cacheId, $activeDomains, $routeWarmer);
