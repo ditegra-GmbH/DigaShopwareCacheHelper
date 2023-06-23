@@ -20,7 +20,9 @@
         <input-field type="bool">
             <name>logOnCacheItemWritten</name>
             <label>Log onCacheItemWritten</label>
-            <label lang="de-DE">Logge onCacheItemWritten</label>
+            <label lang="de-DE">Logge onCacheItemWritten</label>            
+            <helpText>Listen to HttpCacheItemWrittenEvent and log each time a new Item is written to the cache</helpText>
+            <helpText lang="de-DE">Überwachen des HttpCacheItemWrittenEvent und loggen jedes Mal, wenn ein neues Element in den Cache geschrieben wird</helpText>
             <defaultValue>true</defaultValue>
         </input-field>
 
@@ -28,6 +30,8 @@
             <name>logTagsOnCacheItemWritten</name>
             <label>Log Tags onCacheItemWritten</label>
             <label lang="de-DE">Logge onCacheItemWritten</label>
+            <helpText>Log which tags are used for the cache item</helpText>
+            <helpText lang="de-DE">Protokollieren Sie, welche Tags für das Cache-Element verwendet werden</helpText>
             <defaultValue>false</defaultValue>
         </input-field>
 
@@ -42,6 +46,8 @@
             <name>logHttpCacheGenerateKeyEvent</name>            
             <label>Log HttpCacheGenerateKeyEvent</label>
             <label lang="de-DE">Logge HttpCacheGenerateKeyEvent</label>
+            <helpText>Listen to HttpCacheGenerateKeyEvent and log each time a new key is generated in CacheStore during lookup or bevore a item is written to the cache</helpText>
+            <helpText lang="de-DE">Überwachen Sie HttpCacheGenerateKeyEvent und protokollieren Sie jedes Mal, wenn ein neuer Key im CacheStore während der Suche (lookup) oder vor dem Schreiben eines Cache Item generiert wird</helpText>
             <defaultValue>false</defaultValue>
         </input-field>        
 

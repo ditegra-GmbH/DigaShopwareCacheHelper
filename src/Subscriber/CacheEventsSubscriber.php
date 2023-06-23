@@ -52,7 +52,7 @@ class CacheEventsSubscriber implements EventSubscriberInterface
                 $ttl = $event->getResponse()->getTtl();
                 $maxAge = $event->getResponse()->getMaxAge();
 
-                $this->logger->info('CacheHitEvent ItemKey: ' . $itemKey . ' TTL: ' .  $ttl . ' maxAge: ' .  $maxAge . ' RequestUri: '. $requestUri);
+                $this->logger->info('CacheHitEvent | ' . $requestUri .' | ' . $itemKey . ' |  TTL: ' .  $ttl . ' maxAge: ' .  $maxAge);
             }
             
         } catch (\Throwable $th) {       
@@ -75,9 +75,12 @@ class CacheEventsSubscriber implements EventSubscriberInterface
                 $maxAge = $event->getResponse()->getMaxAge();
                 
                 if($logTagsOnCacheItemWritten){
-                    $this->logger->info('CacheItemWrittenEvent ItemKey: ' . $itemKey . ' Tags: ' .  json_encode($tags) . ' TTL: ' .  $ttl . ' maxAge: ' .  $maxAge . ' RequestUri: '. $requestUri);
+
+                    $this->logger->info('CacheItemWrittenEvent | ' . $requestUri .' | ' . $itemKey . ' |  TTL: ' .  $ttl . ' maxAge: ' .  $maxAge . ' Tags: ' .  json_encode($tags));
+
                 }else{
-                    $this->logger->info('CacheItemWrittenEvent ItemKey: ' . $itemKey . ' TTL: ' .  $ttl . ' maxAge: ' .  $maxAge . ' RequestUri: '. $requestUri);
+
+                    $this->logger->info('CacheItemWrittenEvent | ' . $requestUri .' | ' . $itemKey . ' |  TTL: ' .  $ttl . ' maxAge: ' .  $maxAge);
                 }                
             }
 
@@ -93,7 +96,7 @@ class CacheEventsSubscriber implements EventSubscriberInterface
 
             if($logInvalidateCache){
                 $keys = $event->getKeys();
-                $this->logger->info('InvalidateCacheEvent keys: ' .  json_encode($keys));
+                $this->logger->info('InvalidateCacheEvent |  |  |  keys ' . json_encode($keys));
             }
 
         } catch (\Throwable $th) {
@@ -110,7 +113,7 @@ class CacheEventsSubscriber implements EventSubscriberInterface
             if($logHttpCacheGenerateKeyEvent){
                 $requestUri = $event->getRequest()->getRequestUri();
                 $hash = $event->getHash();        
-                $this->logger->info('HttpCacheGenerateKeyEvent hash: ' . $hash . ' RequestUri: '. $requestUri);
+                $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  hash ' .  $hash);
             }
             
         } catch (\Throwable $th) {       

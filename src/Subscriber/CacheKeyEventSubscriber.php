@@ -152,7 +152,7 @@ class CacheKeyEventSubscriber implements EventSubscriberInterface
                         
             $requestUri = $event->getRequest()->getRequestUri();
             
-            $this->logger->info($eventClass . ' - Key: ' . $key . ' Parts ' . json_encode($parts) .  ' RequestUri: '. $requestUri);
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts) );
 
         } catch (\Throwable $th) {       
             $this->logger->error( $th->getMessage());

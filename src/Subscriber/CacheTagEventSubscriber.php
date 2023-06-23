@@ -72,17 +72,15 @@ class CacheTagEventSubscriber implements EventSubscriberInterface
             $parts = explode('\\', get_class($event));
             $eventClass = array_pop($parts);
 
-            // if $eventClass exist in $selectedCacheTagEvents array 
             if(is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
                 return;
             }
 
             $tags = $event->getTags();
-            $requestUri = $event->getRequest()->getRequestUri();
-            
-            $this->logger->info($eventClass . ' - Tags: ' . json_encode($tags) . ' RequestUri: '. $requestUri);
+            $requestUri = $event->getRequest()->getRequestUri();           
+            $this->logger->info($eventClass . ' | '. $requestUri . ' |  | ' . json_encode($tags) );
 
-        } catch (\Throwable $th) {       
+        } catch (\Throwable $th) {
             $this->logger->error( $th->getMessage());
         }
     }
