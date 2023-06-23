@@ -62,7 +62,8 @@ class DigaHttpCacheWarmUpCommand extends Command
         $this
             ->setName('diga:http:cache:warmup')
             ->addOption('keep-cache', null, InputOption::VALUE_NONE, 'Keeps the same cache id so no cache invalidation is triggered')    
-            ->addArgument('warmer', InputArgument::OPTIONAL, 'which warmer shoud be used? [NavigationRouteWarmer, ProductRouteWarmer]');
+            ->addArgument('warmer', InputArgument::OPTIONAL, 'which warmer shoud be used? [NavigationRouteWarmer, ProductRouteWarmer, all]')
+            ->addArgument('saleschannel', InputArgument::OPTIONAL, 'saleschannelid to be warmedup');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -81,13 +82,24 @@ class DigaHttpCacheWarmUpCommand extends Command
         $criteria->addAssociation('domains');
         $activeSalesChannels = $this->salesChannelRepository->search($criteria, Context::createDefaultContext());
 
+        $saleschannel = $input->getArgument('saleschannel');
+        if(!$saleschannel){
+            $saleschannel = '';
+        }
+        
         $activeDomains = [];
         /** @var SalesChannelEntity $activeSalesChannel */
         foreach($activeSalesChannels as $activeSalesChannel) {
+            
             $typeId = $activeSalesChannel->getTypeId();
             if(strtoupper($typeId) != strtoupper('8a243080f92e4c719546314b577cf82b')) {
                 continue;
-            }   
+            }
+
+            if(!empty($saleschannels) &&  strtoupper($activeSalesChannel->getId()) != strtoupper($saleschannel)){
+                continue;
+            }
+
             /** @var SalesChannelDomainCollection $domains */
             $domains = $activeSalesChannel->getDomains();
 
