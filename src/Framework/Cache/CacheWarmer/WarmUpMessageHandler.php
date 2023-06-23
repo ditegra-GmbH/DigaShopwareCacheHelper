@@ -43,7 +43,7 @@ class WarmUpMessageHandler extends AbstractMessageHandler
         SystemConfigService $systemConfigService,
         RouterInterface $router,
         CacheIdLoader $cacheIdLoader,
-        Connection $connection,
+        Connection $connection
     ) {        
         $this->logger = $logger;
         $this->systemConfigService = $systemConfigService;
