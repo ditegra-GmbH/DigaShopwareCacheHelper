@@ -4,7 +4,6 @@ namespace DigaShopwareCacheHelper\Framework\Cache\CacheWarmer;
 
 use Psr\Log\LoggerInterface;
 use Doctrine\DBAL\Connection;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\Routing\RouterInterface;
 use Shopware\Core\Framework\Adapter\Cache\CacheIdLoader;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
@@ -84,7 +83,7 @@ class WarmUpMessageHandler extends AbstractMessageHandler
             if($logSeoUrlsOnWarmUp){
 
                 $salecChannelIds = $this->getSalecChannelId($domain);
-                $seoUrlsResults = $this->getSeoUrls($route, $pathInfo, $salecChannelIds);
+                $seoUrlsResults = $this->getSeoUrls($route, $pathInfo);
                                                 
                 $seoUrls = '';
                 if(!empty($seoUrlsResults)){
