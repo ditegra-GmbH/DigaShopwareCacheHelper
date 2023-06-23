@@ -10,7 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ## [1.0.2] - 23.06.2023
+- add option to log which seo urls should be warmed up by cache warmer
 - add parameter so we can warmup just a specific saleschannel
+- change logger row structure to Event | URL | ItemKey | data for better analyzing the data
 
 ## [1.0.2] - 17.06.2023
 - add command to be able to warmup cache just for active domains and selected warmer (category or products)
