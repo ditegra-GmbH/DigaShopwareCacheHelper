@@ -39,6 +39,7 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <argument type="service" id="router"/>
             <argument type="service" id="Shopware\Core\Framework\Adapter\Cache\CacheIdLoader"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
 
             <tag name="messenger.message_handler"/>
         </service>

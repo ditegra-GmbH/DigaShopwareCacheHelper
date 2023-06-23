@@ -13,42 +13,58 @@
         <input-field type="bool">
             <name>logOnCacheHit</name>
             <label>Log onCacheHit</label>
+            <label lang="de-DE">Logge onCacheHit</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
         <input-field type="bool">
             <name>logOnCacheItemWritten</name>
             <label>Log onCacheItemWritten</label>
+            <label lang="de-DE">Logge onCacheItemWritten</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
         <input-field type="bool">
             <name>logTagsOnCacheItemWritten</name>
             <label>Log Tags onCacheItemWritten</label>
+            <label lang="de-DE">Logge onCacheItemWritten</label>
             <defaultValue>false</defaultValue>
         </input-field>
 
         <input-field type="bool">
             <name>logInvalidateCache</name>
             <label>Log InvalidateCache</label>
+            <label lang="de-DE">Logge InvalidateCache</label>
             <defaultValue>true</defaultValue>
         </input-field>
 
         <input-field type="bool">
-            <name>logHttpCacheGenerateKeyEvent</name>
+            <name>logHttpCacheGenerateKeyEvent</name>            
             <label>Log HttpCacheGenerateKeyEvent</label>
+            <label lang="de-DE">Logge HttpCacheGenerateKeyEvent</label>
             <defaultValue>false</defaultValue>
         </input-field>        
 
         <input-field type="bool">
             <name>logCacheWarmup</name>
             <label>Log Cache Warmup URLs</label>
+            <label lang="de-DE">Logge Cache Warmup SEO URLs</label>
             <defaultValue>false</defaultValue>
         </input-field>
         
+        <input-field type="bool">
+            <name>logSeoUrlsOnWarmUp</name>
+            <label>Log Cache Warmup SEO URLs</label>
+            <label lang="de-DE">Logge Cache Warmup SEO URLs</label>
+            <helpText>Will log all possible seo urls which should be warmed up by the cache warmer</helpText>
+            <helpText lang="de-DE">Loggt alle möglichen SEO-Urls, die durch den Cache-Warmer aufgewärmt werden sollen.</helpText>
+            <defaultValue>false</defaultValue>
+        </input-field>
+
         <input-field type="multi-select">
             <name>selectedCacheTagEvents</name>
             <label>Select which Cache Tag Event should be logged</label>
+            <label  lang="de-DE">Wählen Sie aus, welches Cache-Tag-Ereignis protokolliert werden soll</label>
             <options>
                 <option>
                     <id>PaymentMethodRouteCacheTagsEvent</id>
@@ -125,6 +141,7 @@
         <input-field type="multi-select">
             <name>selectedCacheKeyEvents</name>
             <label>Select which Cache Key Event should be logged</label>
+            <label lang="de-DE">Wählen Sie aus, welches Cache-Key-Ereignis protokolliert werden soll</label>
             <options>
                 <option>
                     <id>PaymentMethodRouteCacheKeyEvent</id>
