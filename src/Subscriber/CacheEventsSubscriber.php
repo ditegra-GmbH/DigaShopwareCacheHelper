@@ -3,10 +3,12 @@
 namespace DigaShopwareCacheHelper\Subscriber;
 
 use Psr\Log\LoggerInterface;
+use Shopware\Core\SalesChannelRequest;
 use Symfony\Component\HttpFoundation\Response;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Framework\Adapter\Cache\InvalidateCacheEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Shopware\Storefront\Framework\Cache\CacheResponseSubscriber;
 use Shopware\Storefront\Framework\Cache\Event\HttpCacheHitEvent;
 use Shopware\Storefront\Framework\Cache\Event\HttpCacheGenerateKeyEvent;
 use Shopware\Storefront\Framework\Cache\Event\HttpCacheItemWrittenEvent;
@@ -110,10 +112,33 @@ class CacheEventsSubscriber implements EventSubscriberInterface
                          
             $logHttpCacheGenerateKeyEvent = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logHttpCacheGenerateKeyEvent');
 
+ 
             if($logHttpCacheGenerateKeyEvent){
+                
                 $requestUri = $event->getRequest()->getRequestUri();
                 $hash = $event->getHash();        
-                $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  hash ' .  $hash);
+
+                $httpCacheKey = 'http-cache-' . $hash;
+
+                if ($event->getRequest()->cookies->has(CacheResponseSubscriber::CONTEXT_CACHE_COOKIE)) {
+                    $val = $event->getRequest()->cookies->get(CacheResponseSubscriber::CONTEXT_CACHE_COOKIE);
+                    $httpCacheKey = 'http-cache-' . hash('sha256', $hash . '-' . $val);
+                    $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' ' .CacheResponseSubscriber::CONTEXT_CACHE_COOKIE . ': ' . $val );
+                }
+        
+                if ($event->getRequest()->cookies->has(CacheResponseSubscriber::CURRENCY_COOKIE)) {
+                    $val = $event->getRequest()->cookies->get(CacheResponseSubscriber::CURRENCY_COOKIE);
+                    $httpCacheKey = 'http-cache-' . hash('sha256', $hash . '-' . $val);
+                    $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' ' . CacheResponseSubscriber::CURRENCY_COOKIE . ': ' . $val );
+                }
+        
+                if ($event->getRequest()->attributes->has(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID)) {
+                    $val = $event->getRequest()->attributes->get(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID);
+                    $httpCacheKey =  'http-cache-' . hash('sha256', $hash . '-' . $val);                    
+                    $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' ' . SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID . ': ' . $val);
+                }
+                
+                $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' no cookies' );
             }
             
         } catch (\Throwable $th) {       
