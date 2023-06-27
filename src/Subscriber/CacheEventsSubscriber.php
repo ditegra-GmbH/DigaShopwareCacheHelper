@@ -124,18 +124,21 @@ class CacheEventsSubscriber implements EventSubscriberInterface
                     $val = $event->getRequest()->cookies->get(CacheResponseSubscriber::CONTEXT_CACHE_COOKIE);
                     $httpCacheKey = 'http-cache-' . hash('sha256', $hash . '-' . $val);
                     $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' ' .CacheResponseSubscriber::CONTEXT_CACHE_COOKIE . ': ' . $val );
+                    return;
                 }
         
                 if ($event->getRequest()->cookies->has(CacheResponseSubscriber::CURRENCY_COOKIE)) {
                     $val = $event->getRequest()->cookies->get(CacheResponseSubscriber::CURRENCY_COOKIE);
                     $httpCacheKey = 'http-cache-' . hash('sha256', $hash . '-' . $val);
                     $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' ' . CacheResponseSubscriber::CURRENCY_COOKIE . ': ' . $val );
+                    return;
                 }
         
                 if ($event->getRequest()->attributes->has(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID)) {
                     $val = $event->getRequest()->attributes->get(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID);
                     $httpCacheKey =  'http-cache-' . hash('sha256', $hash . '-' . $val);                    
                     $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' ' . SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID . ': ' . $val);
+                    return;
                 }
                 
                 $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' no cookies' );
