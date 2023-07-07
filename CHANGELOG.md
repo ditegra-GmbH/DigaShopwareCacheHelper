@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Removed
 
+## [1.0.3] - 23.06.2023
+- refactor http cache key generated to see which cookies are used and what is the resulting cache-key
+
 ## [1.0.2] - 23.06.2023
 - add option to log which seo urls should be warmed up by cache warmer
 - add parameter so we can warmup just a specific saleschannel
