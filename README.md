@@ -11,11 +11,11 @@ The Cache Helper diligently logs a multitude of events. This not only simplifies
 - Logs InvalidateCache
 
 ## Features:
-- writes the logs to default shopware var/log folder
-- usefull in production mode
+- writes the logs to the default Shopware var/log folder
+- useful in production mode
 - log warmed up seo urls
 - command to warmup just active storfront saleschannel
-- command arguments categories or just a sigle sales channel
+- command arguments categories or just a single sales channel
 - logs ttl and maxage output on cache hits
 
 
