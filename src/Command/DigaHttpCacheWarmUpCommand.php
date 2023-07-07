@@ -96,7 +96,7 @@ class DigaHttpCacheWarmUpCommand extends Command
                 continue;
             }
 
-            if(!empty($saleschannels) &&  strtoupper($activeSalesChannel->getId()) != strtoupper($saleschannel)){
+            if(!empty($saleschannel) &&  strtoupper($activeSalesChannel->getId()) != strtoupper($saleschannel)){
                 continue;
             }
 
@@ -104,6 +104,7 @@ class DigaHttpCacheWarmUpCommand extends Command
             $domains = $activeSalesChannel->getDomains();
 
             foreach($domains as $domain) {
+                $output->writeln(sprintf('warmup domain %s', $domain->getUrl()));
                 array_push($activeDomains, $domain);
             }
         }
