@@ -1,0 +1,106 @@
+name: PR accepted
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  Build:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Specify safe directory for git
+        run: |
+            git config --global --add safe.directory $(pwd)
+
+      - name: Install shopware-cli
+        uses: FriendsOfShopware/shopware-cli-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Plugin
+        run: |
+          if test -f "./src/Resources/app/administration/package.json"; then
+              npm install --prefix "./src/Resources/app/administration/" --unsafe-perm
+          fi
+          
+          if test -f "./src/Resources/app/storefront/package.json"; then
+              npm install --prefix "./src/Resources/app/storefront/" --unsafe-perm
+          fi
+          
+          if test -f "./src/Resources/app/package.json"; then
+              npm install --prefix "./src/Resources/app/" --unsafe-perm
+          fi
+          
+          rm -rf ./.github
+          shopware-cli --version
+          shopware-cli extension build . 
+          shopware-cli extension validate . 
+
+  Test:
+    if: github.event.pull_request.merged == true
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create zip and install devs
+        run: |
+          make zip
+          ls -a ../.build
+          echo "ZIP_FILENAME=$(ls -1t ../.build  | head -n 1)" >> $GITHUB_ENV
+          make dev
+
+      - name: Set plugin name and run stan test
+        run: |
+          echo "PLUGIN_NAME=$(echo $ZIP_FILENAME | grep -P '^[a-zA-Z]+' -o)" >> $GITHUB_ENV
+          make stan
+          
+      - uses: actions/upload-artifact@v1
+        with:
+          name: build-artifacts
+          path: ../.build/
+          
+  Release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+    - run: |
+        echo The PR was merged
+    - uses: actions/checkout@v2
+    - name: Create zip with makefile
+      run: |
+        ls -a
+        make zip
+        
+    - name: Get version
+      run: >
+          echo "EXTENSION_VERSION=$(jq ".version" ${{ github.workspace
+          }}/composer.json -r)" >> $GITHUB_ENV
+    - uses: mukunku/tag-exists-action@v1.2.0
+      id: checkTag
+      with:
+        tag: ${{ env.EXTENSION_VERSION }}
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+          
+    - name: Extract changelog for release version
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: >
+        echo "Pattern used for sed: /^## \\[${EXTENSION_VERSION}\\]/,/^## / ! d"        
+        sed -e "/^## \\[${EXTENSION_VERSION}\\]/,/^## / ! d" CHANGELOG.md | head -n -1 >> RELEASE.md            
+        printf "\n" >> RELEASE.md          
+        cat RELEASE.md 
+          
+    - name: Create a GitHub release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: ../.build/*.zip
+        tag: v${{ env.EXTENSION_VERSION }}
+        name: v${{ env.EXTENSION_VERSION }}
+        commit: main
+        bodyFile: ./RELEASE.md

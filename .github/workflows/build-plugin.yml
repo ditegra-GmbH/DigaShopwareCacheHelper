@@ -1,0 +1,121 @@
+# This workflow is meant to be used to build compatible plugin  with composer without shopware store
+# builds using latest shopware version
+
+name: Build Plugin 
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:      
+  Build:
+    #container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ needs.Setup.outputs.shopwareVersion }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Specify safe directory for git
+        run: |
+            git config --global --add safe.directory $(pwd)
+
+      #- name: Download shopware-cli
+      #  run: |
+      #    wget -q https://github.com/FriendsOfShopware/shopware-cli/releases/download/${SHOPWARE_CLI_VERSION}/shopware-cli_Linux_x86_64.tar.gz
+      #    tar -zxf shopware-cli_*.tar.gz shopware-cli
+      #    mv shopware-cli /usr/bin/shopware-cli
+      #    rm shopware-cli_*.tar.gz
+
+      - name: Install shopware-cli
+        uses: FriendsOfShopware/shopware-cli-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Plugin
+        run: |
+          if test -f "./src/Resources/app/administration/package.json"; then
+              npm install --prefix "./src/Resources/app/administration/" --unsafe-perm
+          fi
+          
+          if test -f "./src/Resources/app/storefront/package.json"; then
+              npm install --prefix "./src/Resources/app/storefront/" --unsafe-perm
+          fi
+          
+          if test -f "./src/Resources/app/package.json"; then
+              npm install --prefix "./src/Resources/app/" --unsafe-perm
+          fi
+          
+          rm -rf ./.github
+          shopware-cli --version
+          shopware-cli extension build . 
+          shopware-cli extension validate . 
+          pwd
+
+  Create-zip:
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create zip and install devs
+        run: |
+          make zip
+          ls -a ../.build
+          echo "ZIP_FILENAME=$(ls -1t ../.build  | head -n 1)" >> $GITHUB_ENV
+          composer --version
+          make dev
+
+      - name: Set plugin name and run stan test
+        run: |
+          echo "PLUGIN_NAME=$(echo $ZIP_FILENAME | grep -P '^[a-zA-Z]+' -o)" >> $GITHUB_ENV
+          make stan
+          
+      - uses: actions/upload-artifact@v1
+        with:
+          name: build-artifacts
+          path: ../.build/
+          
+      
+      #- name: Copy zip to staging SW 6.4
+      #  uses: garygrossgarten/github-action-scp@release   
+      #  with:
+      #    local: ../.build
+      #    remote: /var/www/clients/client1/web31/web/prod
+      #    host: k43j85.meinserver.io
+      #    username: ${{ secrets.STAGING_USER }}
+      #    password: ${{ secrets.STAGING_SECRET }}
+
+      #- name: Install plugin on staging SW 6.4
+      #  uses: appleboy/ssh-action@v1.0.0
+      #  with:
+      #    host: k43j85.meinserver.io
+      #    username: ${{ secrets.STAGING_USER }}
+      #    password: ${{ secrets.STAGING_SECRET }}
+      #    envs: ZIP_FILENAME, PLUGIN_NAME
+      #    script: |
+      #      echo "/var/www/clients/client1/web31/web/prod bin/console plugin:zip-import $ZIP_FILENAME"
+      #      echo "/var/www/clients/client1/web31/web/prod bin/console plugin:update $PLUGIN_NAME"        
+      #      echo "/var/www/clients/client1/web31/web/prod bin/console plugin:install -a $PLUGIN_NAME"
+      #      echo "/var/www/clients/client1/web31/web/prod/bin/console cache:clear"
+
+      - name: Copy zip to staging SW 6.5
+        uses: garygrossgarten/github-action-scp@release   
+        with:
+          local: ../.build
+          remote: /var/www/clients/client1/web33/web/prod
+          host: k43j85.meinserver.io
+          username: ${{ secrets.STAGING_SW65_USER }}
+          password: ${{ secrets.STAGING_SW65_SECRET }}
+
+     
+      - name: Install plugin on staging SW 6.5
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: k43j85.meinserver.io
+          username: ${{ secrets.STAGING_SW65_USER }}
+          password: ${{ secrets.STAGING_SW65_SECRET }}
+          envs: ZIP_FILENAME, PLUGIN_NAME
+          script: |
+            echo "/var/www/clients/client1/web33/web/prod/bin/console plugin:zip-import $ZIP_FILENAME"
+            echo "/var/www/clients/client1/web33/web/prod/bin/console plugin:update $PLUGIN_NAME"        
+            echo "/var/www/clients/client1/web33/web/prod/bin/console plugin:install -a $PLUGIN_NAME"
+            echo "/var/www/clients/client1/web33/web/prod/bin/console cache:clear"
+            
