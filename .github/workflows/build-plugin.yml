@@ -114,8 +114,11 @@ jobs:
           password: ${{ secrets.STAGING_SW65_SECRET }}
           envs: ZIP_FILENAME, PLUGIN_NAME
           script: |
-            echo "/var/www/clients/client1/web33/web/prod/bin/console plugin:zip-import $ZIP_FILENAME"
-            echo "/var/www/clients/client1/web33/web/prod/bin/console plugin:update $PLUGIN_NAME"        
-            echo "/var/www/clients/client1/web33/web/prod/bin/console plugin:install -a $PLUGIN_NAME"
-            echo "/var/www/clients/client1/web33/web/prod/bin/console cache:clear"
+            cd /var/www/clients/client1/web33/web/prod
+            pwd
+            bin/console plugin:zip-import $ZIP_FILENAME
+            bin/console plugin:update $PLUGIN_NAME       
+            bin/console plugin:install -a $PLUGIN_NAME
+            bin/console cache:clear
+            rm -rf $ZIP_FILENAME
             
