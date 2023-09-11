@@ -66,6 +66,7 @@ jobs:
           
   Release:
     if: github.event.pull_request.merged == true
+    needs: Test
     runs-on: ubuntu-latest
     steps:
     - run: |
@@ -91,9 +92,12 @@ jobs:
       shell: bash
       working-directory: ${{ github.workspace }}
       run: >
-        echo "Pattern used for sed: /^## \\[${EXTENSION_VERSION}\\]/,/^## / ! d"        
+        echo "Pattern used for sed: /^## \\[${EXTENSION_VERSION}\\]/,/^## / ! d"       
+        
         sed -e "/^## \\[${EXTENSION_VERSION}\\]/,/^## / ! d" CHANGELOG.md | head -n -1 >> RELEASE.md            
+        
         printf "\n" >> RELEASE.md          
+        
         cat RELEASE.md 
           
     - name: Create a GitHub release
