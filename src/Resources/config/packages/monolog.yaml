@@ -1,0 +1,9 @@
+monolog:
+    channels: ['digaCacheHelper']
+
+    handlers:
+        digaCacheHelperHandler:
+            type: rotating_file
+            path: "%kernel.logs_dir%/diga_cache_helper-%kernel.environment%.log"
+            level: info
+            channels: ['digaCacheHelper']
