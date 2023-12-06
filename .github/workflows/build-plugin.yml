@@ -77,6 +77,7 @@ jobs:
           envs: ZIP_FILENAME, PLUGIN_NAME
           script: |
             cd $REMOTE_PATH
+            pwd
             bin/console plugin:zip-import $ZIP_FILENAME
             bin/console plugin:update $PLUGIN_NAME       
             bin/console plugin:install -a $PLUGIN_NAME
