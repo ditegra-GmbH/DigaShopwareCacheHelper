@@ -74,7 +74,7 @@ jobs:
           host: ${{ secrets.HOST_NAME }}
           username: ${{ secrets.STAGING_SW65_USER }}
           password: ${{ secrets.STAGING_SW65_SECRET }}
-          envs: ZIP_FILENAME, PLUGIN_NAME
+          envs: ZIP_FILENAME, PLUGIN_NAME, REMOTE_PATH
           script: |
             cd $REMOTE_PATH
             pwd
