@@ -1,7 +1,7 @@
 {
   "name": "diga/shopwarecachehelper-plugin",
   "description": "shopwarecachehelper Plugin",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "type": "shopware-platform-plugin",
   "license": "proprietary",
   "authors": [{
@@ -18,10 +18,10 @@
       "de-DE": "Cache Helper",
       "en-GB": "Cache Helper"
     },
-    "copyright": "ditega GmbH",
+    "copyright": "ditegra GmbH",
     "description": {
-      "de-DE": "Hilft bei der Fehlersuche und Untersuchung, versteht des Shopware Caching",
-      "en-GB": "helps to debugg and investigate, understand shopware caching"
+      "de-DE": "Hilft bei der Fehlersuche und Untersuchung, versteht des Shopware Caching, verschiedene Möglichkeiten, Cache-Ereignisse zu protokollieren und Shopware-Probleme zu überprüfen",
+      "en-GB": "helps to debug and investigate, understand shopware caching, provides options to capture cache events, debug shopware issues. Creates a separate log file to capture cache events"
     },
     "manufacturerLink": {
       "de-DE": "https://ditegra.de",
