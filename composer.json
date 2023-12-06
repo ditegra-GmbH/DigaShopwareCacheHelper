@@ -5,7 +5,7 @@
   "type": "shopware-platform-plugin",
   "license": "proprietary",
   "authors": [{
-    "name": "ditega GmbH"
+    "name": "ditegra GmbH"
   }],
   "autoload": {
     "psr-4": {
