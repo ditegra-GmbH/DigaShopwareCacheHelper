@@ -29,7 +29,7 @@
         <input-field type="bool">
             <name>logTagsOnCacheItemWritten</name>
             <label>Log Tags onCacheItemWritten</label>
-            <label lang="de-DE">Logge onCacheItemWritten</label>
+            <label lang="de-DE">Logge onCacheItemTagWritten</label>
             <helpText>Log which tags are used for the cache item</helpText>
             <helpText lang="de-DE">Protokollieren Sie, welche Tags für das Cache-Element verwendet werden</helpText>
             <defaultValue>false</defaultValue>
@@ -53,8 +53,8 @@
 
         <input-field type="bool">
             <name>logCacheWarmup</name>
-            <label>Log Cache Warmup URLs</label>
-            <label lang="de-DE">Logge Cache Warmup SEO URLs</label>
+            <label>Log Cache Warmup</label>
+            <label lang="de-DE">Logge Cache Warmup</label>
             <defaultValue>false</defaultValue>
         </input-field>
         

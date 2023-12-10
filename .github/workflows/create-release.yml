@@ -1,3 +1,5 @@
+# This workflow is meant to be used to build plugin  with composer and create github release without shopware store
+
 name: Create Release
 on:
   workflow_dispatch:
@@ -5,7 +7,6 @@ on:
     types:
       - closed
 env:
-  SHOPWARE_CLI_VERSION: '0.1.70'
   shopwareVersion: '6.5.7'
 
 jobs:
@@ -29,15 +30,6 @@ jobs:
         run: |
             git config --global --add safe.directory $(pwd)
 
-      # Uncomment below to build with specific shopware-cli version
-      # - name: Download shopware-cli
-      #   run: |
-      #     wget -q https://github.com/FriendsOfShopware/shopware-cli/releases/download/${SHOPWARE_CLI_VERSION}/shopware-cli_Linux_x86_64.tar.gz
-      #     tar -zxf shopware-cli_*.tar.gz shopware-cli
-      #     mv shopware-cli /usr/bin/shopware-cli
-      #     rm shopware-cli_*.tar.gz
-
-      # Uncomment below to build with latest shopware-cli version
       - name: Install shopware-cli
         uses: FriendsOfShopware/shopware-cli-action@v1
         env:
@@ -45,22 +37,8 @@ jobs:
 
       - name: Build Plugin
         run: |
-          if test -f "./src/Resources/app/administration/package.json"; then
-              npm install --prefix "./src/Resources/app/administration/" --unsafe-perm
-          fi
-          
-          if test -f "./src/Resources/app/storefront/package.json"; then
-              npm install --prefix "./src/Resources/app/storefront/" --unsafe-perm
-          fi
-          
-          if test -f "./src/Resources/app/package.json"; then
-              npm install --prefix "./src/Resources/app/" --unsafe-perm
-          fi
-          
-          rm -rf ./.github
           shopware-cli --version
           shopware-cli extension build . 
-          # shopware-cli extension validate . 
 
       - name: Create zip and install devs
         run: |
@@ -68,6 +46,10 @@ jobs:
           ls -a ../.build
           echo "ZIP_FILENAME=$(ls -1t ../.build  | head -n 1)" >> $GITHUB_ENV
           # make dev
+
+      - name: Validate plugin zip for shopware store compatibility
+        run: |
+          shopware-cli extension validate ../.build/$ZIP_FILENAME
 
       - name: Set plugin name and run stan test
         run: |
@@ -91,7 +73,7 @@ jobs:
       - uses: mukunku/tag-exists-action@v1.2.0
         id: checkTag
         with:
-          tag: ${{ env.EXTENSION_VERSION }}
+          tag: v${{ env.EXTENSION_VERSION }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
             

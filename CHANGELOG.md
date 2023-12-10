@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Removed
 
+## [2.0.1] - 06.12.2023
+- Changed logging to use Monolog channel
+
+## [2.0.0] - 21.11.2023
+- compatibility fixes for SW 6.5.7.1
+
 ## [1.0.3] - 23.06.2023
 - refactor http cache key generated to see which cookies are used and what is the resulting cache-key
 

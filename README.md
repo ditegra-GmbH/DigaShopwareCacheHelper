@@ -24,7 +24,7 @@ The Cache Helper diligently logs a multitude of events. This not only simplifies
 Install and activate
 
 ## Supported SW Version:
-sw 6.4.x
+sw 6.5.x
 
 ## Dependencies:
 none
