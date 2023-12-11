@@ -18,7 +18,7 @@ jobs:
       shopwareVersion: ${{ env.shopwareVersion }}
 
   Release:
-    if: github.event.pull_request.merged == true
+    #if: github.event.pull_request.merged == true
     needs: Setup
     container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ needs.Setup.outputs.shopwareVersion }}
     runs-on: ubuntu-latest
