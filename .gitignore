@@ -2,3 +2,4 @@ node_modules
 package-lock.json
 vendor
 src/Resources/public/administration/js/*
+rector.php

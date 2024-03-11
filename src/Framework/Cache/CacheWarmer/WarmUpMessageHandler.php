@@ -8,10 +8,10 @@ use Symfony\Component\Routing\RouterInterface;
 use Shopware\Core\Framework\Adapter\Cache\CacheIdLoader;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Framework\Cache\CacheWarmer\WarmUpMessage;
-use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-
-class WarmUpMessageHandler implements MessageSubscriberInterface
+#[AsMessageHandler]
+class WarmUpMessageHandler
 {
     /**
     * @var LoggerInterface
@@ -57,7 +57,7 @@ class WarmUpMessageHandler implements MessageSubscriberInterface
         return [WarmUpMessage::class];
     }
 
-    public function __invoke($message): void
+    public function __invoke(WarmUpMessage $message): void
     {
         $logCacheWarmup = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logCacheWarmup');
         if(!$logCacheWarmup)
