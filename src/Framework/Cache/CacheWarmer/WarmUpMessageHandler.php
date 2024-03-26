@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DigaShopwareCacheHelper\Framework\Cache\CacheWarmer;
 
@@ -9,7 +11,6 @@ use Shopware\Core\Framework\Adapter\Cache\CacheIdLoader;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Framework\Cache\CacheWarmer\WarmUpMessage;
 use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
-
 
 class WarmUpMessageHandler implements MessageSubscriberInterface
 {
@@ -44,12 +45,12 @@ class WarmUpMessageHandler implements MessageSubscriberInterface
         RouterInterface $router,
         CacheIdLoader $cacheIdLoader,
         Connection $connection
-    ) {        
+    ) {
         $this->logger = $logger;
         $this->systemConfigService = $systemConfigService;
-        $this->router = $router;        
+        $this->router = $router;
         $this->cacheIdLoader = $cacheIdLoader;
-        $this->connection = $connection;    
+        $this->connection = $connection;
     }
 
     public static function getHandledMessages(): iterable
@@ -60,54 +61,51 @@ class WarmUpMessageHandler implements MessageSubscriberInterface
     public function __invoke($message): void
     {
         $logCacheWarmup = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logCacheWarmup');
-        if(!$logCacheWarmup)
+        if (!$logCacheWarmup) {
             return;
-        
+        }
+
         if (!$message instanceof WarmUpMessage) {
             return;
         }
 
-        if ($this->cacheIdLoader->load() !== $message->getCacheId()) {            
+        if ($this->cacheIdLoader->load() !== $message->getCacheId()) {
             $this->logger->info('Skip WarmUp because: ' . $this->cacheIdLoader->load() . ' != ' . $message->getCacheId(), [$message]);
             return;
         }
-        
+
         $logSeoUrlsOnWarmUp = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logSeoUrlsOnWarmUp');
-        
+
         foreach ($message->getParameters() as $parameters) {
-            
             $route = $message->getRoute();
             $pathInfo = $this->router->generate($route, $parameters);
             $domain = $message->getDomain();
             $url = rtrim($domain, '/') . $pathInfo;
 
-            if($logSeoUrlsOnWarmUp){
-
+            if ($logSeoUrlsOnWarmUp) {
                 $salecChannelIds = $this->getSalecChannelId($domain);
                 $seoUrlsResults = $this->getSeoUrls($route, $pathInfo);
-                                                
+
                 $seoUrls = '';
-                if(!empty($seoUrlsResults)){
-                    foreach($seoUrlsResults as $seoPathInfo){
+                if (!empty($seoUrlsResults)) {
+                    foreach ($seoUrlsResults as $seoPathInfo) {
                         $salesChannelIid = $seoPathInfo['sales_channel_id'];
-                        if(!in_array($salesChannelIid, $salecChannelIds))
+                        if (!in_array($salesChannelIid, $salecChannelIds)) {
                             continue;
+                        }
 
                         $seoUrls .= '/'. $seoPathInfo['seo_path_info'] . ' ';
                     }
                 }
-                $this->logger->info('WarmUpMessage handler | ' . $url .' |  | ' .  $seoUrls );
-
-
+                $this->logger->info('WarmUpMessage handler | ' . $url .' |  | ' .  $seoUrls);
             } else {
-
-                $this->logger->info('WarmUpMessage handler | ' . $url .' |  | ' );        
+                $this->logger->info('WarmUpMessage handler | ' . $url .' |  | ');
             }
-        }   
+        }
     }
 
-    private function getSalecChannelId(string $domain) : array {
-
+    private function getSalecChannelId(string $domain): array
+    {
         $sql = sprintf(
             "SELECT LOWER(HEX(`sales_channel_id`)) AS `sales_channel_id` FROM `sales_channel_domain` WHERE `sales_channel_domain`.`url` LIKE '%s';",
             $domain
@@ -121,19 +119,21 @@ class WarmUpMessageHandler implements MessageSubscriberInterface
         return $salesChannelIds;
     }
 
-    private function getSeoUrls(string $routeName, string $pathInfo) : array{
-
+    private function getSeoUrls(string $routeName, string $pathInfo): array
+    {
         $sql = 'SELECT seo_path_info, LOWER(HEX(`sales_channel_id`)) AS `sales_channel_id` FROM seo_url 
         WHERE `seo_url`.`route_name` =:routeName
          AND `seo_url`.`path_info` =:pathInfo 
          AND `seo_url`.`is_canonical` = 1
          AND `seo_url`.`is_deleted` = 0 ';
-        
-        $query = $this->connection->executeQuery($sql, 
+
+        $query = $this->connection->executeQuery(
+            $sql,
             [
                 'routeName' => $routeName,
                 'pathInfo' => $pathInfo
-            ]);
+            ]
+        );
 
         return  $query->fetchAllAssociative();
     }

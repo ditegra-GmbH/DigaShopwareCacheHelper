@@ -1,0 +1,126 @@
+# This workflow is meant to be used to build compatible plugin  with composer and create github release without shopware store
+# check comments to build using 6.4 shopware version
+
+name: Build validate & create release
+on:
+  workflow_dispatch:
+    inputs:
+      shopwareVersion:
+        description: 'The shopware version to build the extension with'
+        required: false
+        type: string
+        default: '6.5.8'
+      cliVersion:
+        description: 'The shopware-cli version to build the extension with'
+        required: false
+        type: string
+        default: 'latest'
+      reRun:
+        description: 'Used to re-run workflow. Possible values [yes|no] default: no'
+        required: false
+        type: string
+        default: 'no'
+  pull_request:
+    types:
+      - closed
+
+env:
+    SHOPWARE_CLI_VERSION: ${{ inputs.cliVersion || 'latest' }}
+    EXTENSION_NAME: ${{ github.event.repository.name }}
+
+jobs:
+  Release:
+    if: (github.event.pull_request.merged == true) || (inputs.reRun == 'yes')
+    container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.5.8' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Specify safe directory for git
+        run: |
+            git config --global --add safe.directory $(pwd)
+      
+      - name: Install shopware-cli
+        uses: FriendsOfShopware/shopware-cli-action@v1
+        with:
+          version: ${{ env.SHOPWARE_CLI_VERSION }}
+      
+      - name: Run static code analysis with stan
+        run: |
+          composer update
+          echo "PLUGIN_NAME=$(echo $ZIP_FILENAME | grep -E '^[a-zA-Z]+' -o)" >> $GITHUB_ENV
+          make dev
+          make stan
+          make clean
+
+      - name: Build extension
+        run: |
+          if test -f "./src/Resources/app/administration/package.json"; then
+              npm install --prefix "./src/Resources/app/administration/" --unsafe-perm
+          fi
+          
+          if test -f "./src/Resources/app/storefront/package.json"; then
+              npm install --prefix "./src/Resources/app/storefront/" --unsafe-perm
+          fi
+          
+          if test -f "./src/Resources/app/package.json"; then
+              npm install --prefix "./src/Resources/app/" --unsafe-perm
+          fi
+          
+          rm -rf ./.github
+          shopware-cli --version
+          shopware-cli extension build .
+
+      - name: Create zip and install devs
+        run: |
+          make zip
+          ls -a ../.build
+          echo "ZIP_FILENAME=$(ls -1t ../.build  | head -n 1)" >> $GITHUB_ENV
+          composer --version
+
+      - name: Validate plugin zip for shopware store compatibility
+        run: |
+          shopware-cli extension validate ../.build/$ZIP_FILENAME
+          
+      - name: Upload artifacts to git
+        uses: actions/upload-artifact@v1
+        with:
+          name: build-artifacts
+          path: ../.build/
+      
+      - name: Create zip with makefile
+        run: |
+          ls -a
+          make zip
+          
+      - name: Get version
+        run: >
+          echo "EXTENSION_VERSION=$(jq ".version" composer.json -r)" >> $GITHUB_ENV
+      - uses: mukunku/tag-exists-action@v1.2.0
+        id: checkTag
+        with:
+          tag: v${{ env.EXTENSION_VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+              
+      - name: Extract changelog for release version
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        run: >
+          echo "Pattern used for sed: /^## \\[${EXTENSION_VERSION}\\]/,/^## / ! d"       
+          
+          find . -iname "changelog.md" -exec sed -e "/^## \\[${EXTENSION_VERSION}\\]/,/^## / ! d" {} \; | head -n -1 >> RELEASE.md
+          
+          printf "\n" >> RELEASE.md          
+          
+          cat RELEASE.md 
+
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ../.build/*.zip
+          tag: v${{ env.EXTENSION_VERSION }}
+          name: v${{ env.EXTENSION_VERSION }}
+          commit: main
+          bodyFile: ./RELEASE.md
