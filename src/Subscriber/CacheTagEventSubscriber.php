@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DigaShopwareCacheHelper\Subscriber;
 
@@ -41,9 +43,9 @@ class CacheTagEventSubscriber implements EventSubscriberInterface
         $this->systemConfigService = $systemConfigService;
     }
 
-    public static function getSubscribedEvents(): array 
+    public static function getSubscribedEvents(): array
     {
-        return [                       
+        return [
             PaymentMethodRouteCacheTagsEvent::class => 'onCacheTags',
             ShippingMethodRouteCacheTagsEvent::class => 'onCacheTags',
             CategoryRouteCacheTagsEvent::class => 'onCacheTags',
@@ -65,23 +67,21 @@ class CacheTagEventSubscriber implements EventSubscriberInterface
     }
 
     public function onCacheTags(StoreApiRouteCacheTagsEvent $event): void
-    {        
+    {
         try {
-
             $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
             $parts = explode('\\', get_class($event));
             $eventClass = array_pop($parts);
 
-            if(is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
                 return;
             }
 
             $tags = $event->getTags();
-            $requestUri = $event->getRequest()->getRequestUri();           
-            $this->logger->info($eventClass . ' | '. $requestUri . ' |  | ' . json_encode($tags) );
-
+            $requestUri = $event->getRequest()->getRequestUri();
+            $this->logger->info($eventClass . ' | '. $requestUri . ' |  | ' . json_encode($tags));
         } catch (\Throwable $th) {
-            $this->logger->error( $th->getMessage());
+            $this->logger->error($th->getMessage());
         }
     }
 }

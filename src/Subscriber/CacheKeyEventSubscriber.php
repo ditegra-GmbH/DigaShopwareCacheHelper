@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace DigaShopwareCacheHelper\Subscriber;
 
@@ -42,9 +44,9 @@ class CacheKeyEventSubscriber implements EventSubscriberInterface
         $this->systemConfigService = $systemConfigService;
     }
 
-    public static function getSubscribedEvents(): array 
+    public static function getSubscribedEvents(): array
     {
-        return [                       
+        return [
             PaymentMethodRouteCacheKeyEvent::class => 'onCacheKey',
             ShippingMethodRouteCacheKeyEvent::class => 'onCacheKey',
             CategoryRouteCacheKeyEvent::class => 'onCacheKey',
@@ -66,96 +68,93 @@ class CacheKeyEventSubscriber implements EventSubscriberInterface
     }
 
     public function onCacheKey(StoreApiRouteCacheKeyEvent $event): void
-    {        
+    {
         try {
-
             $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
             $parts = explode('\\', get_class($event));
             $eventClass = array_pop($parts);
 
-            // if $eventClass exist in $selectedCacheTagEvents array 
-            if(is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
                 return;
             }
 
             $parts = $event->getParts();
             $key = '';
 
-            if($event instanceof StoreApiRouteCacheKeyEvent){
+            if ($event instanceof StoreApiRouteCacheKeyEvent) {
                 $key = 'payment-method-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof PaymentMethodRouteCacheKeyEvent){
+            if ($event instanceof PaymentMethodRouteCacheKeyEvent) {
                 $key = 'payment-method-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof ShippingMethodRouteCacheKeyEvent){
+            if ($event instanceof ShippingMethodRouteCacheKeyEvent) {
                 $key = 'shipping-method-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof CategoryRouteCacheKeyEvent){
+            if ($event instanceof CategoryRouteCacheKeyEvent) {
                 $key = 'category-route-' . $event->getNavigationId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof NavigationRouteCacheKeyEvent){
+            if ($event instanceof NavigationRouteCacheKeyEvent) {
                 $key = 'navigation-route-' . $event->getActive(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof LandingPageRouteCacheKeyEvent){
+            if ($event instanceof LandingPageRouteCacheKeyEvent) {
                 $key = 'landing-page-route-' . $event->getLandingPageId() . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof CrossSellingRouteCacheKeyEvent){
+            if ($event instanceof CrossSellingRouteCacheKeyEvent) {
                 $key = 'cross-selling-route-' . $event->getProductId() . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof ProductDetailRouteCacheKeyEvent){
+            if ($event instanceof ProductDetailRouteCacheKeyEvent) {
                 $key = 'product-detail-route-' . 'prodid-should-be-here' . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof ProductListingRouteCacheKeyEvent){
+            if ($event instanceof ProductListingRouteCacheKeyEvent) {
                 $key = 'product-listing-route-' . $event->getCategoryId() . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof ProductSearchRouteCacheKeyEvent){
+            if ($event instanceof ProductSearchRouteCacheKeyEvent) {
                 $key = 'product-search-route' . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof ProductSuggestRouteCacheKeyEvent){
-                
+            if ($event instanceof ProductSuggestRouteCacheKeyEvent) {
                 $key = 'product-suggest-route' . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof SitemapRouteCacheKeyEvent){
+            if ($event instanceof SitemapRouteCacheKeyEvent) {
                 $key = 'sitemap-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof CountryRouteCacheKeyEvent){
+            if ($event instanceof CountryRouteCacheKeyEvent) {
                 $key = 'country-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof CountryStateRouteCacheKeyEvent){
+            if ($event instanceof CountryStateRouteCacheKeyEvent) {
                 $key = 'country-state-route-' . 'countryid-should-be-here' . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof CurrencyRouteCacheKeyEvent){
+            if ($event instanceof CurrencyRouteCacheKeyEvent) {
                 $key = 'currency-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof LanguageRouteCacheKeyEvent){
+            if ($event instanceof LanguageRouteCacheKeyEvent) {
                 $key = 'language-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
 
-            if($event instanceof SalutationRouteCacheKeyEvent){
+            if ($event instanceof SalutationRouteCacheKeyEvent) {
                 $key = 'salutation-route' . '-' . md5(JsonFieldSerializer::encodeJson($event->getParts()));
             }
-                        
-            $requestUri = $event->getRequest()->getRequestUri();
-            
-            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts) );
 
-        } catch (\Throwable $th) {       
-            $this->logger->error( $th->getMessage());
+            $requestUri = $event->getRequest()->getRequestUri();
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
         }
     }
 }
