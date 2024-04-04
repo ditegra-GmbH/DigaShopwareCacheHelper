@@ -10,7 +10,7 @@ use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-class DigaLoggerFactoryService implements LoggerInterface {
+class DigaLoggerFactoryService {
 
     private LoggerInterface $logger;
 
@@ -25,44 +25,10 @@ class DigaLoggerFactoryService implements LoggerInterface {
             $this->logger->pushHandler(new StreamHandler($logFile, Level::Debug));
         }
     }
-
-    public function emergency(string|\Stringable $message, array $context = []):void {
-        $this->logger->emergency($message, $context);
-    }
-
-   
-    public function alert(string|\Stringable $message, array $context = []): void {
-        $this->logger->alert($message, $context);
-    }
-
-   
-    public function critical(string|\Stringable $message, array $context = []): void {
-        $this->logger->critical($message, $context);
-    }
-
-  
-    public function error(string|\Stringable $message, array $context = []): void {
-        $this->logger->error($message, $context);
-    }
-
-   
-    public function warning(string|\Stringable $message, array $context = []): void {
-        $this->logger->warning($message, $context);
-    }
-
-  
-    public function notice(string|\Stringable $message, array $context = []): void {
-        $this->logger->notice($message, $context);
-    }
-
-    
-    public function info(string|\Stringable $message, array $context = []): void {
-        $this->logger->info($message, $context);
-    }
-
-    
-    public function debug(string|\Stringable $message, array $context = []): void {
-        $this->logger->debug($message, $context);
+    //dynamic method call
+    public function __call($name, $arguments)
+    {
+        $this->logger->{$name}($arguments[0], $arguments[1] ?? []);
     }
 
     public function log($level, string|\Stringable $message, array $context = []): void {
