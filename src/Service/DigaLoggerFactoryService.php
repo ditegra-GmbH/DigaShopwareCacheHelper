@@ -28,7 +28,9 @@ class DigaLoggerFactoryService {
     //dynamic method call
     public function __call($name, $arguments)
     {
-        $this->logger->{$name}($arguments[0], $arguments[1] ?? []);
+        if(method_exists($this->logger, $name)) {
+            $this->logger->{$name}($arguments[0], $arguments[1] ?? []);
+        }
     }
 
     public function log($level, string|\Stringable $message, array $context = []): void {
