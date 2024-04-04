@@ -221,6 +221,23 @@
             <defaultValue>["NavigationRouteCacheKeyEvent", "CategoryRouteCacheKeyEvent", "LandingPageRouteCacheKeyEvent", "ProductDetailRouteCacheKeyEvent", "ProductListingRouteCacheKeyEvent"]</defaultValue>
         </input-field>
 
-
+        <input-field type="single-select">
+            <name>loggingOutput</name>
+            <label>Logging output</label>
+            <label lang="de-DE">Logausgabe</label>
+            <defaultValue>stderr</defaultValue>
+            <options>
+                <option>
+                    <id>stderr</id>
+                    <name>Log to php://stderr</name>
+                    <name lang="de-DE">Lognachrichten nach php://stderr</name>
+                </option>
+                <option>
+                    <id>file</id>
+                    <name>Log to file</name>
+                    <name lang="de-DE">Lognachrichten in Datei</name>
+                </option>
+            </options>
+        </input-field>
     </card>
 </config>
