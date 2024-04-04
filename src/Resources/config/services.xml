@@ -10,9 +10,13 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <tag name="kernel.event_subscriber"/>
         </service>
-
+        <service id="DigaShopwareCacheHelper\Service\DigaLoggerFactoryService">
+            <argument type="service" id="monolog.logger.digaCacheHelper"/> 
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        </service>
         <service id="DigaShopwareCacheHelper\Subscriber\CacheTagEventSubscriber">
             <argument type="service" id="monolog.logger.digaCacheHelper"/> 
+            <argument type="service" id="DigaShopwareCacheHelper\Service\DigaLoggerFactoryService"/> 
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
             <tag name="kernel.event_subscriber"/>
         </service>

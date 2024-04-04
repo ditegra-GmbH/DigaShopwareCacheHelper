@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DigaShopwareCacheHelper\Subscriber;
 
+use DigaShopwareCacheHelper\Service\DigaLoggerFactoryService;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -37,7 +38,7 @@ class CacheTagEventSubscriber implements EventSubscriberInterface
      */
     private $systemConfigService;
 
-    public function __construct(LoggerInterface $logger, SystemConfigService $systemConfigService)
+    public function __construct(LoggerInterface $logger, DigaLoggerFactoryService $loggerFactory, SystemConfigService $systemConfigService)
     {
         $this->logger = $logger;
         $this->systemConfigService = $systemConfigService;
