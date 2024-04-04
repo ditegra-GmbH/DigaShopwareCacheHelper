@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace DigaShopwareCacheHelper\Subscriber;
 
 use DigaShopwareCacheHelper\Service\DigaLoggerFactoryService;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Shopware\Core\System\Country\Event\CountryRouteCacheTagsEvent;
@@ -29,7 +28,7 @@ use Shopware\Core\Checkout\Shipping\Event\ShippingMethodRouteCacheTagsEvent;
 class CacheTagEventSubscriber implements EventSubscriberInterface
 {
     /**
-    * @var LoggerInterface
+    * @var DigaLoggerFactoryService
     */
     private $logger;
 
@@ -38,7 +37,7 @@ class CacheTagEventSubscriber implements EventSubscriberInterface
      */
     private $systemConfigService;
 
-    public function __construct(LoggerInterface $logger, DigaLoggerFactoryService $loggerFactory, SystemConfigService $systemConfigService)
+    public function __construct(DigaLoggerFactoryService $logger, SystemConfigService $systemConfigService)
     {
         $this->logger = $logger;
         $this->systemConfigService = $systemConfigService;

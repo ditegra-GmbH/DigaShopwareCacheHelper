@@ -10,18 +10,19 @@ use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 
-class DigaLoggerFactoryService implements LoggerInterface{
+class DigaLoggerFactoryService implements LoggerInterface {
 
     private LoggerInterface $logger;
 
-    public function __construct(LoggerInterface $logger, SystemConfigService $systemConfigService)
+    public function __construct(LoggerInterface $logger, SystemConfigService $systemConfigService, string $logFile)
     {
+        
         if($systemConfigService->get('DigaShopwareCacheHelper.config.loggingOutput') === 'stderr') {
             $this->logger = $logger;
         } else {
             //instantiate new Logger instance
             $this->logger = new Logger('file_logger');
-            $this->logger->pushHandler(new StreamHandler('./test.log', Level::Debug));
+            $this->logger->pushHandler(new StreamHandler($logFile, Level::Debug));
         }
     }
 
