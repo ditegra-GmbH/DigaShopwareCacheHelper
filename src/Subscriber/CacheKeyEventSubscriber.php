@@ -28,20 +28,8 @@ use Shopware\Core\Framework\DataAbstractionLayer\FieldSerializer\JsonFieldSerial
 
 class CacheKeyEventSubscriber implements EventSubscriberInterface
 {
-    /**
-    * @var DigaLoggerFactoryService
-    */
-    private $logger;
-
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
-
-    public function __construct(DigaLoggerFactoryService $logger, SystemConfigService $systemConfigService)
+    public function __construct(private readonly DigaLoggerFactoryService $logger, private readonly SystemConfigService $systemConfigService)
     {
-        $this->logger = $logger;
-        $this->systemConfigService = $systemConfigService;
     }
 
     public static function getSubscribedEvents(): array
@@ -71,7 +59,7 @@ class CacheKeyEventSubscriber implements EventSubscriberInterface
     {
         try {
             $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
-            $parts = explode('\\', get_class($event));
+            $parts = explode('\\', $event::class);
             $eventClass = array_pop($parts);
 
             // if $eventClass exist in $selectedCacheTagEvents array

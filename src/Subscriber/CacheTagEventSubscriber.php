@@ -27,20 +27,8 @@ use Shopware\Core\Checkout\Shipping\Event\ShippingMethodRouteCacheTagsEvent;
 
 class CacheTagEventSubscriber implements EventSubscriberInterface
 {
-    /**
-    * @var DigaLoggerFactoryService
-    */
-    private $logger;
-
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
-
-    public function __construct(DigaLoggerFactoryService $logger, SystemConfigService $systemConfigService)
+    public function __construct(private readonly DigaLoggerFactoryService $logger, private readonly SystemConfigService $systemConfigService)
     {
-        $this->logger = $logger;
-        $this->systemConfigService = $systemConfigService;
     }
 
     public static function getSubscribedEvents(): array
@@ -70,7 +58,7 @@ class CacheTagEventSubscriber implements EventSubscriberInterface
     {
         try {
             $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
-            $parts = explode('\\', get_class($event));
+            $parts = explode('\\', $event::class);
             $eventClass = array_pop($parts);
 
             if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {

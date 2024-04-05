@@ -16,20 +16,8 @@ use Shopware\Storefront\Framework\Cache\Event\HttpCacheItemWrittenEvent;
 
 class CacheEventsSubscriber implements EventSubscriberInterface
 {
-    /**
-    * @var DigaLoggerFactoryService
-    */
-    private $logger;
-
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
-
-    public function __construct(DigaLoggerFactoryService $logger, SystemConfigService $systemConfigService)
+    public function __construct(private readonly DigaLoggerFactoryService $logger, private readonly SystemConfigService $systemConfigService)
     {
-        $this->logger = $logger;
-        $this->systemConfigService = $systemConfigService;
     }
 
     public static function getSubscribedEvents(): array

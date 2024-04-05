@@ -24,39 +24,16 @@ use Shopware\Core\System\SalesChannel\Aggregate\SalesChannelDomain\SalesChannelD
 class DigaHttpCacheWarmUpCommand extends Command
 {
     /**
-     * @var EntityRepository
-     */
-    private $salesChannelRepository;
-
-    /**
-     * @var CacheIdLoader
-     */
-    private $cacheIdLoader;
-
-    /**
-     * @var MessageBusInterface
-     */
-    private $bus;
-
-    /**
-     * @var CacheRouteWarmerRegistry
-     */
-    private $registry;
-    /**
      * @internal
      */
     public function __construct(
-        EntityRepository $salesChannelRepository,
-        CacheIdLoader $cacheIdLoader,
-        MessageBusInterface $bus,
-        CacheRouteWarmerRegistry $registry
+        private readonly EntityRepository $salesChannelRepository,
+        private readonly CacheIdLoader $cacheIdLoader,
+        private readonly MessageBusInterface $bus,
+        private readonly CacheRouteWarmerRegistry $registry
     )
     {
         parent::__construct();
-        $this->salesChannelRepository = $salesChannelRepository;
-        $this->cacheIdLoader = $cacheIdLoader;
-        $this->bus = $bus;
-        $this->registry = $registry;
     }
 
     protected function configure(): void
@@ -77,7 +54,7 @@ class DigaHttpCacheWarmUpCommand extends Command
         }
 
         // $this->warmer->warmUp($cacheId);
-        $cacheId = $cacheId ?? $this->cacheIdLoader->load();
+        $cacheId ??= $this->cacheIdLoader->load();
 
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsFilter('active', true));
@@ -97,7 +74,7 @@ class DigaHttpCacheWarmUpCommand extends Command
                 continue;
             }
 
-            if (!empty($saleschannel) &&  strtoupper($activeSalesChannel->getId()) != strtoupper($saleschannel)) {
+            if (!empty($saleschannel) &&  strtoupper($activeSalesChannel->getId()) != strtoupper((string) $saleschannel)) {
                 continue;
             }
 
@@ -132,7 +109,7 @@ class DigaHttpCacheWarmUpCommand extends Command
         foreach ($domains as $domain) {
             foreach ($this->registry->getWarmers() as $warmer) {
                 if (!empty($routeWarmer)) {
-                    $parts = explode('\\', get_class($warmer));
+                    $parts = explode('\\', $warmer::class);
                     $warmerClass = array_pop($parts);
 
                     if ($warmerClass !== $routeWarmer) {
