@@ -11,9 +11,9 @@
             <tag name="kernel.event_subscriber"/>
         </service>
         <service id="DigaShopwareCacheHelper\Service\DigaLoggerFactoryService">
-            <argument type="service" id="monolog.logger.digaCacheHelper"/> 
+            <argument type="service" id="monolog.logger"/> 
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="string">%kernel.logs_dir%/diga_shopware_cache_helper.log</argument>
+            <argument type="string">%kernel.logs_dir%/diga_cache_helper-%kernel.environment%.log</argument>
         </service>
         <service id="DigaShopwareCacheHelper\Subscriber\CacheTagEventSubscriber">
             <argument type="service" id="DigaShopwareCacheHelper\Service\DigaLoggerFactoryService"/> 
