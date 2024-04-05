@@ -58,7 +58,7 @@ class WarmUpMessageHandler implements MessageSubscriberInterface
         return [WarmUpMessage::class];
     }
 
-    public function __invoke($message): void
+    public function __invoke(WarmUpMessage $message): void
     {
         $logCacheWarmup = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logCacheWarmup');
         if (!$logCacheWarmup) {
