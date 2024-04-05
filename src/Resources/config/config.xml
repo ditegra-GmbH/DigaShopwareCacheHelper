@@ -229,13 +229,13 @@
             <options>
                 <option>
                     <id>stderr</id>
-                    <name>Log to php://stderr</name>
-                    <name lang="de-DE">Lognachrichten nach php://stderr</name>
+                    <name>Log with Shopware logger</name>
+                    <name lang="de-DE">Shopware logger verwenden</name>
                 </option>
                 <option>
                     <id>file</id>
-                    <name>Log to file</name>
-                    <name lang="de-DE">Lognachrichten in Datei</name>
+                    <name>Log with Cachehelper logger</name>
+                    <name lang="de-DE">Cachehelper Logger verwenden</name>
                 </option>
             </options>
         </input-field>
