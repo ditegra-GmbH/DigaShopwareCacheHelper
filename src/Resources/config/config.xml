@@ -228,12 +228,12 @@
             <defaultValue>stderr</defaultValue>
             <options>
                 <option>
-                    <id>stderr</id>
+                    <id>shopwarelog</id>
                     <name>Log with Shopware logger</name>
                     <name lang="de-DE">Shopware logger verwenden</name>
                 </option>
                 <option>
-                    <id>file</id>
+                    <id>cachehelperlog</id>
                     <name>Log with Cachehelper logger</name>
                     <name lang="de-DE">Cachehelper Logger verwenden</name>
                 </option>

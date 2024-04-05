@@ -17,7 +17,7 @@ class DigaLoggerFactoryService {
     public function __construct(LoggerInterface $logger, SystemConfigService $systemConfigService, string $logFile)
     {
         
-        if($systemConfigService->get('DigaShopwareCacheHelper.config.loggingOutput') === 'stderr') {
+        if($systemConfigService->get('DigaShopwareCacheHelper.config.loggingOutput') === 'shopwarelog') {
             $this->logger = $logger;
         } else {
             //instantiate new Logger instance
