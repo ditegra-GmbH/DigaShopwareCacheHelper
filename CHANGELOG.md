@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ## [2.1.0] - 04.04.2024
-- added option to configuration for changeing logging output
+- added option to configuration for changing logging output
 - added DigaLoggerFactory
 
 ## [2.0.2] - 26.03.2024
