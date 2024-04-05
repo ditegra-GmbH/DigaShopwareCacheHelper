@@ -225,7 +225,7 @@
             <name>loggingOutput</name>
             <label>Logging output</label>
             <label lang="de-DE">Logausgabe</label>
-            <defaultValue>stderr</defaultValue>
+            <defaultValue>shopwarelog</defaultValue>
             <options>
                 <option>
                     <id>shopwarelog</id>
