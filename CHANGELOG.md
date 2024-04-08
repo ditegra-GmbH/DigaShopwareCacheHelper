@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Removed
 
+## [3.0.0] - 04.04.2024
+- added support for Shopware 6.6
+
 ## [2.1.0] - 04.04.2024
 - added option to configuration for changing logging output
 - added DigaLoggerFactory
