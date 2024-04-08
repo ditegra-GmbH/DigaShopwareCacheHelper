@@ -1,0 +1,65 @@
+# This workflow is meant to be used to build a compatible (validated) plugin run stan and run tests
+
+name: Build & validate
+on:
+  workflow_dispatch:
+    inputs:
+      shopwareVersion:
+        description: 'The shopware version to build the extension with'
+        required: false
+        type: string
+        default: '6.5.8'
+      cliVersion:
+        description: 'The shopware-cli version to build the extension with'
+        required: false
+        type: string
+        default: 'latest'
+  pull_request:
+
+env:
+  SHOPWARE_CLI_VERSION: ${{ inputs.cliVersion || 'latest' }}
+  EXTENSION_NAME: ${{ github.event.repository.name }}
+  
+jobs:  
+  build:
+    container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.5.8' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Install shopware-cli
+        uses: FriendsOfShopware/shopware-cli-action@v1
+        with:
+          version: ${{ env.SHOPWARE_CLI_VERSION }}
+      
+      - name: Run static code analysis with stan
+        run: |
+          composer update
+          echo "PLUGIN_NAME=$(echo $ZIP_FILENAME | grep -E '^[a-zA-Z]+' -o)" >> $GITHUB_ENV
+          make dev
+          make stan
+          make clean
+
+      - name: Build extension
+        run: |
+          rm -rf ./.github
+          shopware-cli --version
+          shopware-cli extension build .
+
+      - name: Create zip and install devs
+        run: |
+          make zip
+          ls -a ../.build
+          echo "ZIP_FILENAME=$(ls -1t ../.build  | head -n 1)" >> $GITHUB_ENV
+          composer --version
+
+      - name: Validate plugin zip for shopware store compatibility
+        run: |
+          shopware-cli extension validate ../.build/$ZIP_FILENAME
+          
+      - name: Upload artifacts to git
+        uses: actions/upload-artifact@v1
+        with:
+          name: build-artifacts
+          path: ../.build/
