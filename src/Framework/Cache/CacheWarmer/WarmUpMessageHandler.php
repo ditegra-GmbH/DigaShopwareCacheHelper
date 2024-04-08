@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DigaShopwareCacheHelper\Framework\Cache\CacheWarmer;
 
-use Psr\Log\LoggerInterface;
+use DigaShopwareCacheHelper\Service\DigaLoggerFactoryService;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Routing\RouterInterface;
 use Shopware\Core\Framework\Adapter\Cache\CacheIdLoader;
@@ -17,7 +17,7 @@ class WarmUpMessageHandler
      * @internal
      */
     public function __construct(
-        private readonly LoggerInterface $logger, 
+        private readonly DigaLoggerFactoryService $logger, 
         private readonly SystemConfigService $systemConfigService, 
         private readonly RouterInterface $router, 
         private readonly CacheIdLoader $cacheIdLoader, 
