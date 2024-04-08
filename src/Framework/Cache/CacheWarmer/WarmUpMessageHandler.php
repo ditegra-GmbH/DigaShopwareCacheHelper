@@ -4,58 +4,25 @@ declare(strict_types=1);
 
 namespace DigaShopwareCacheHelper\Framework\Cache\CacheWarmer;
 
-use Psr\Log\LoggerInterface;
+use DigaShopwareCacheHelper\Service\DigaLoggerFactoryService;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Routing\RouterInterface;
 use Shopware\Core\Framework\Adapter\Cache\CacheIdLoader;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Storefront\Framework\Cache\CacheWarmer\WarmUpMessage;
-use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
 
-class WarmUpMessageHandler implements MessageSubscriberInterface
+class WarmUpMessageHandler
 {
-    /**
-    * @var LoggerInterface
-    */
-    private $logger;
-
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
-
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var CacheIdLoader
-     */
-    private $cacheIdLoader;
-
-    private Connection $connection;
-
     /**
      * @internal
      */
     public function __construct(
-        LoggerInterface $logger,
-        SystemConfigService $systemConfigService,
-        RouterInterface $router,
-        CacheIdLoader $cacheIdLoader,
-        Connection $connection
-    ) {
-        $this->logger = $logger;
-        $this->systemConfigService = $systemConfigService;
-        $this->router = $router;
-        $this->cacheIdLoader = $cacheIdLoader;
-        $this->connection = $connection;
-    }
-
-    public static function getHandledMessages(): iterable
+        private readonly DigaLoggerFactoryService $logger, 
+        private readonly SystemConfigService $systemConfigService, 
+        private readonly RouterInterface $router, 
+        private readonly CacheIdLoader $cacheIdLoader, 
+        private readonly Connection $connection)
     {
-        return [WarmUpMessage::class];
     }
 
     public function __invoke(WarmUpMessage $message): void

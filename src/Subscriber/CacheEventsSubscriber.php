@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace DigaShopwareCacheHelper\Subscriber;
 
-use Psr\Log\LoggerInterface;
+use DigaShopwareCacheHelper\Service\DigaLoggerFactoryService;
 use Shopware\Core\SalesChannelRequest;
-use Symfony\Component\HttpFoundation\Response;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Framework\Adapter\Cache\InvalidateCacheEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -17,20 +16,8 @@ use Shopware\Storefront\Framework\Cache\Event\HttpCacheItemWrittenEvent;
 
 class CacheEventsSubscriber implements EventSubscriberInterface
 {
-    /**
-    * @var LoggerInterface
-    */
-    private $logger;
-
-    /**
-     * @var SystemConfigService
-     */
-    private $systemConfigService;
-
-    public function __construct(LoggerInterface $logger, SystemConfigService $systemConfigService)
+    public function __construct(private readonly DigaLoggerFactoryService $logger, private readonly SystemConfigService $systemConfigService)
     {
-        $this->logger = $logger;
-        $this->systemConfigService = $systemConfigService;
     }
 
     public static function getSubscribedEvents(): array

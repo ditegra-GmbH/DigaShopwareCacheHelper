@@ -221,6 +221,23 @@
             <defaultValue>["NavigationRouteCacheKeyEvent", "CategoryRouteCacheKeyEvent", "LandingPageRouteCacheKeyEvent", "ProductDetailRouteCacheKeyEvent", "ProductListingRouteCacheKeyEvent"]</defaultValue>
         </input-field>
 
-
+        <input-field type="single-select">
+            <name>loggingOutput</name>
+            <label>Logging output</label>
+            <label lang="de-DE">Logausgabe</label>
+            <defaultValue>shopwarelog</defaultValue>
+            <options>
+                <option>
+                    <id>shopwarelog</id>
+                    <name>Log with Shopware logger</name>
+                    <name lang="de-DE">Shopware logger verwenden</name>
+                </option>
+                <option>
+                    <id>cachehelperlog</id>
+                    <name>Log with Cachehelper logger</name>
+                    <name lang="de-DE">Cachehelper Logger verwenden</name>
+                </option>
+            </options>
+        </input-field>
     </card>
 </config>
