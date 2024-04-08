@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DigaShopwareCacheHelper\Subscriber;
 
-use Shopware\Core\Framework\Util\Json;
 use DigaShopwareCacheHelper\Service\DigaLoggerFactoryService;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
