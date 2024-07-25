@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Removed
 
+## [2.1.1] - 25.07.2024
+- fix issue with all parameter for the cache warmup command
+- added command docu and how to use examples
+
 ## [2.1.0] - 04.04.2024
 - added option to configuration for changing logging output
 - added DigaLoggerFactory
