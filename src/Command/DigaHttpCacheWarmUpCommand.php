@@ -90,7 +90,7 @@ class DigaHttpCacheWarmUpCommand extends Command
         $this->cacheIdLoader->write($cacheId);
 
         $routeWarmer = $input->getArgument('warmer');
-        if (!$routeWarmer) {
+        if (!$routeWarmer || strtolower($routeWarmer) == 'all') {
             $routeWarmer = '';
         }
 
