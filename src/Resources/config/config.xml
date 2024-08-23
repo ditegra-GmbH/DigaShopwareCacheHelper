@@ -42,31 +42,6 @@
             <defaultValue>true</defaultValue>
         </input-field>
 
-        <input-field type="bool">
-            <name>logHttpCacheGenerateKeyEvent</name>            
-            <label>Log HttpCacheGenerateKeyEvent</label>
-            <label lang="de-DE">Logge HttpCacheGenerateKeyEvent</label>
-            <helpText>Listen to HttpCacheGenerateKeyEvent and log each time a new key is generated in CacheStore during lookup or bevore a item is written to the cache</helpText>
-            <helpText lang="de-DE">Überwachen Sie HttpCacheGenerateKeyEvent und protokollieren Sie jedes Mal, wenn ein neuer Key im CacheStore während der Suche (lookup) oder vor dem Schreiben eines Cache Item generiert wird</helpText>
-            <defaultValue>false</defaultValue>
-        </input-field>        
-
-        <input-field type="bool">
-            <name>logCacheWarmup</name>
-            <label>Log Cache Warmup</label>
-            <label lang="de-DE">Logge Cache Warmup</label>
-            <defaultValue>false</defaultValue>
-        </input-field>
-        
-        <input-field type="bool">
-            <name>logSeoUrlsOnWarmUp</name>
-            <label>Log Cache Warmup SEO URLs</label>
-            <label lang="de-DE">Logge Cache Warmup SEO URLs</label>
-            <helpText>Will log all possible seo urls which should be warmed up by the cache warmer</helpText>
-            <helpText lang="de-DE">Loggt alle möglichen SEO-Urls, die durch den Cache-Warmer aufgewärmt werden sollen.</helpText>
-            <defaultValue>false</defaultValue>
-        </input-field>
-
         <input-field type="multi-select">
             <name>selectedCacheTagEvents</name>
             <label>Select which Cache Tag Event should be logged</label>
