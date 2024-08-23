@@ -42,6 +42,15 @@
             <defaultValue>true</defaultValue>
         </input-field>
 
+        <input-field type="bool">
+            <name>logHttpCacheGenerateKeyEvent</name>            
+            <label>Log HttpCacheGenerateKeyEvent</label>
+            <label lang="de-DE">Logge HttpCacheGenerateKeyEvent</label>
+            <helpText>Listen to HttpCacheGenerateKeyEvent and log each time a new key is generated in CacheStore during lookup or before an item is written to the cache</helpText>
+            <helpText lang="de-DE">Überwachen Sie HttpCacheGenerateKeyEvent und protokollieren Sie jedes Mal, wenn ein neuer Key im CacheStore während der Suche (lookup) oder vor dem Schreiben eines Cache Item generiert wird</helpText>
+            <defaultValue>false</defaultValue>
+        </input-field>  
+
         <input-field type="multi-select">
             <name>selectedCacheTagEvents</name>
             <label>Select which Cache Tag Event should be logged</label>
