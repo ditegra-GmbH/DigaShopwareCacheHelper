@@ -12,7 +12,7 @@ use Shopware\Core\SalesChannelRequest;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Framework\Adapter\Cache\InvalidateCacheEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Shopware\Storefront\Framework\Cache\CacheResponseSubscriber;
+use Shopware\Core\Framework\Adapter\Cache\Http\CacheResponseSubscriber;
 
 class CacheEventsSubscriber implements EventSubscriberInterface
 {
@@ -99,9 +99,7 @@ class CacheEventsSubscriber implements EventSubscriberInterface
 
             if ($logHttpCacheGenerateKeyEvent && !empty($cookies) && !empty($attributes)) {
                 $requestUri = $event->request->getRequestUri();
-                //$hash = $event->getHash(); old from HttpCacheGenerateKeyEvent
-                $hash = 'randomvalue'; //ToDo: should be fixed
-                dump($event);
+                $hash = $event->get('hash');
                 $httpCacheKey = 'http-cache-' . $hash;
                 
                 if ($cookies->has(CacheResponseSubscriber::CONTEXT_CACHE_COOKIE)) {
