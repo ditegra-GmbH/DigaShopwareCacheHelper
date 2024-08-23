@@ -13,10 +13,15 @@ The Cache Helper diligently logs a multitude of events. This not only simplifies
 ## Features:
 - writes the logs to the default Shopware var/log folder
 - useful in production mode
-- log warmed up seo urls
-- command to warmup just active storfront saleschannel
-- command arguments categories or just a single sales channel
+- log warmed up seo urls (removed in 6.6)
+- command to warmup just active storfront saleschannel (removed in 6.6)
+- command arguments categories or just a single sales channel (removed in 6.6)
 - logs ttl and maxage output on cache hits
+
+## Breaking changes in SW 6.6
+Shopware has removed the http cache warmup command and its related messages and handlers.
+
+So we cannot use the diga:http:cache:warmup command anymore.
 
 
 
@@ -24,7 +29,7 @@ The Cache Helper diligently logs a multitude of events. This not only simplifies
 Install and activate
 
 ## Supported SW Version:
-sw 6.5.x
+sw 6.5.x, 6.6.x
 
 ## Dependencies:
 none
@@ -35,4 +40,4 @@ none
 ## Technical concept:
 
 ## License
-Copyright 2022 ditegra GmbH
+Copyright 2024 ditegra GmbH
