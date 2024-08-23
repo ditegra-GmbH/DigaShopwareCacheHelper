@@ -94,10 +94,10 @@ class CacheEventsSubscriber implements EventSubscriberInterface
             $logHttpCacheGenerateKeyEvent = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logHttpCacheGenerateKeyEvent');
 
 
-            $cookies    = $event->request?->cookies;
-            $attributes = $event->request?->attributes;
+            $cookies    = $event->request->cookies;
+            $attributes = $event->request->attributes;
 
-            if ($logHttpCacheGenerateKeyEvent && !empty($cookies) && !empty($attributes)) {
+            if ($logHttpCacheGenerateKeyEvent) {
                 $requestUri = $event->request->getRequestUri();
                 $hash = $event->get('hash');
                 $httpCacheKey = 'http-cache-' . $hash;
