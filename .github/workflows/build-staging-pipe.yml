@@ -1,7 +1,6 @@
-# This workflow is meant to be used to build compatible plugin  with composer and create github release without shopware store
-# check comments to build using 6.4 shopware version
+# This workflow is meant to be used to build a compatible (validated) plugin run stan, run tests and deploy to staging environment. also install and activate the extension
 
-name: Build validate & create release
+name: Build validate & deploy
 on:
   workflow_dispatch:
     inputs:
@@ -15,13 +14,25 @@ on:
         required: false
         type: string
         default: 'latest'
+      stagingHost:
+        description: 'staging host for scp connection'
+        required: true
+        type: string
+        default: 'k43j85.meinserver.io'
+      stagingExtensionPath:
+        description: 'shopware root path on staging host'
+        required: true
+        type: string
+        default: '/var/www/clients/client1/web33/web/prod/'
 
-env:
-    SHOPWARE_CLI_VERSION: ${{ inputs.cliVersion || 'latest' }}
-    EXTENSION_NAME: ${{ github.event.repository.name }}
-
-jobs:
-  Release:
+env:  
+  SHOPWARE_CLI_VERSION: ${{ inputs.cliVersion || 'latest' }}
+  STAGING_HOST: ${{ inputs.stagingHost || 'k43j85.meinserver.io' }}
+  STAGING_EXTENSION_PATH: ${{ inputs.stagingExtensionPath || '/var/www/clients/client1/web33/web/prod/' }}
+  EXTENSION_NAME: ${{ github.event.repository.name }}
+  
+jobs:  
+  build:
     container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.6.4' }}
     runs-on: ubuntu-latest
     steps:
@@ -40,7 +51,6 @@ jobs:
       - name: Run static code analysis with stan
         run: |
           composer update
-          echo "PLUGIN_NAME=$(echo $ZIP_FILENAME | grep -E '^[a-zA-Z]+' -o)" >> $GITHUB_ENV
           make dev
           make stan
           make clean
@@ -63,7 +73,7 @@ jobs:
           shopware-cli --version
           shopware-cli extension build .
 
-      - name: Create zip with makefile
+      - name: Create zip and install devs
         run: |
           make zip
           ls -a ../.build
@@ -73,40 +83,34 @@ jobs:
       - name: Validate plugin zip for shopware store compatibility
         run: |
           shopware-cli extension validate ../.build/$ZIP_FILENAME
-      
+          
       - name: Upload artifacts to git
         uses: actions/upload-artifact@v1
         with:
           name: build-artifacts
           path: ../.build/
           
-      - name: Get version
-        run: >
-          echo "EXTENSION_VERSION=$(jq ".version" composer.json -r)" >> $GITHUB_ENV
-      - uses: mukunku/tag-exists-action@v1.2.0
-        id: checkTag
+      - name: Copy zip to staging
+        uses: garygrossgarten/github-action-scp@release   
         with:
-          tag: v${{ env.EXTENSION_VERSION }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-              
-      - name: Extract changelog for release version
-        shell: bash
-        working-directory: ${{ github.workspace }}
-        run: >
-          echo "Pattern used for sed: /^## \\[${EXTENSION_VERSION}\\]/,/^## / ! d"       
-          
-          find . -iname "changelog.md" -exec sed -e "/^## \\[${EXTENSION_VERSION}\\]/,/^## / ! d" {} \; | head -n -1 >> RELEASE.md
-          
-          printf "\n" >> RELEASE.md          
-          
-          cat RELEASE.md 
-
-      - name: Create a GitHub release
-        uses: ncipollo/release-action@v1
+          local: ../.build
+          remote:  ${{ env.STAGING_EXTENSION_PATH }}
+          host: ${{ env.STAGING_HOST }} 
+          username: ${{ secrets.STAGING_SW65_USER }}
+          password: ${{ secrets.STAGING_SW65_SECRET }}
+     
+      - name: Install plugin on staging
+        uses: appleboy/ssh-action@v1.0.0
         with:
-          artifacts: ../.build/*.zip
-          tag: v${{ env.EXTENSION_VERSION }}
-          name: v${{ env.EXTENSION_VERSION }}
-          commit: ${{ github.sha }}
-          bodyFile: ./RELEASE.md
+          host: ${{ env.STAGING_HOST }} 
+          username: ${{ secrets.STAGING_SW65_USER }}
+          password: ${{ secrets.STAGING_SW65_SECRET }}
+          envs: ZIP_FILENAME, EXTENSION_NAME, STAGING_EXTENSION_PATH
+          script: |
+            cd $STAGING_EXTENSION_PATH
+            pwd
+            bin/console plugin:zip-import $ZIP_FILENAME
+            bin/console plugin:update $EXTENSION_NAME       
+            bin/console plugin:install -a $EXTENSION_NAME
+            bin/console cache:clear
+            rm -rf $ZIP_FILENAME
