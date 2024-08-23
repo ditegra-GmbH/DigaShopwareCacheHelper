@@ -18,12 +18,19 @@ The Cache Helper diligently logs a multitude of events. This not only simplifies
 - command arguments categories or just a single sales channel (removed in 6.6)
 - logs ttl and maxage output on cache hits
 
+## command to warmup just specific saleschannels
+bin/console diga:http:cache:warmup [NavigationRouteWarmer, ProductRouteWarmer, all] [saleschannelId]
+
+example to warmup just "Categories"
+bin/console diga:http:cache:warmup NavigationRouteWarmer 018dac09d3b072e9a67f8aa065c4278a
+
+example to warmup everything for a single saleschannel
+bin/console diga:http:cache:warmup all 018dac09d3b072e9a67f8aa065c4278a
+
 ## Breaking changes in SW 6.6
 Shopware has removed the http cache warmup command and its related messages and handlers.
 
 So we cannot use the diga:http:cache:warmup command anymore.
-
-
 
 ## Installation manual:
 Install and activate
