@@ -8,7 +8,7 @@ on:
         description: 'The shopware version to build the extension with'
         required: false
         type: string
-        default: '6.5.8'
+        default: '6.6.4'
       cliVersion:
         description: 'The shopware-cli version to build the extension with'
         required: false
@@ -22,7 +22,7 @@ env:
   
 jobs:  
   build:
-    container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.5.8' }}
+    container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.6.4' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -43,6 +43,17 @@ jobs:
 
       - name: Build extension
         run: |
+          if test -f "./src/Resources/app/administration/package.json"; then
+              npm install --prefix "./src/Resources/app/administration/" --unsafe-perm
+          fi
+          
+          if test -f "./src/Resources/app/storefront/package.json"; then
+              npm install --prefix "./src/Resources/app/storefront/" --unsafe-perm
+          fi
+          
+          if test -f "./src/Resources/app/package.json"; then
+              npm install --prefix "./src/Resources/app/" --unsafe-perm
+          fi
           rm -rf ./.github
           shopware-cli --version
           shopware-cli extension build .

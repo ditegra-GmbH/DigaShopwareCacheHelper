@@ -3,3 +3,4 @@ package-lock.json
 vendor
 src/Resources/public/administration/js/*
 .php-cs-fixer.cache
+rector.php

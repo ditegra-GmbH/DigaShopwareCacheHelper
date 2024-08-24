@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Removed
 
+## [3.0.0] - 04.04.2024
+- Added support for Shopware 6.6
+### Changed
+- Removed deprecated http cache warmup commands, WarmupMessage scheduled task and handler
+
 ## [2.1.1] - 25.07.2024
 - fix issue with all parameter for the cache warmup command
 - added command docu and how to use examples

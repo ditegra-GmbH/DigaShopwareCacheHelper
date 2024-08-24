@@ -27,25 +27,5 @@
             <tag name="kernel.event_subscriber"/>
         </service>
 
-        <service id="DigaShopwareCacheHelper\Framework\Cache\CacheWarmer\WarmUpMessageHandler">
-            <argument type="service" id="DigaShopwareCacheHelper\Service\DigaLoggerFactoryService"/> 
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
-            <argument type="service" id="router"/>
-            <argument type="service" id="Shopware\Core\Framework\Adapter\Cache\CacheIdLoader"/>
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
-
-            <tag name="messenger.message_handler"/>
-        </service>
-
-        <service id="DigaShopwareCacheHelper\Command\DigaHttpCacheWarmUpCommand">                        
-            <argument type="service" id="sales_channel.repository"/>
-            <argument type="service" id="Shopware\Core\Framework\Adapter\Cache\CacheIdLoader"/>
-            <argument type="service" id="messenger.bus.shopware"/>
-            <argument type="service" id="Shopware\Storefront\Framework\Cache\CacheWarmer\CacheRouteWarmerRegistry"/>
-
-            <tag name="console.command"/>
-            <tag name="container.no_preload"/>
-        </service>
-
     </services>
 </container>
