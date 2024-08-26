@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace DigaShopwareCacheHelper\Subscriber;
 
 use DigaShopwareCacheHelper\Service\DigaLoggerFactoryService;
+use Shopware\Core\Framework\Adapter\Cache\Event\HttpCacheHitEvent;
+use Shopware\Core\Framework\Adapter\Cache\Event\HttpCacheKeyEvent;
+use Shopware\Core\Framework\Adapter\Cache\Event\HttpCacheStoreEvent;
 use Shopware\Core\SalesChannelRequest;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Framework\Adapter\Cache\InvalidateCacheEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Shopware\Storefront\Framework\Cache\CacheResponseSubscriber;
-use Shopware\Storefront\Framework\Cache\Event\HttpCacheHitEvent;
-use Shopware\Storefront\Framework\Cache\Event\HttpCacheGenerateKeyEvent;
-use Shopware\Storefront\Framework\Cache\Event\HttpCacheItemWrittenEvent;
+use Shopware\Core\Framework\Adapter\Cache\Http\CacheResponseSubscriber;
 
 class CacheEventsSubscriber implements EventSubscriberInterface
 {
@@ -23,10 +23,10 @@ class CacheEventsSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            HttpCacheItemWrittenEvent::class => 'onCacheItemWritten',
+            HttpCacheStoreEvent::class => 'onCacheItemWritten',
             HttpCacheHitEvent::class => 'onCacheHit',
             InvalidateCacheEvent::class => 'onInvalidateCache',
-            HttpCacheGenerateKeyEvent::class => 'onHttpCacheGenerateKeyEvent'
+            HttpCacheKeyEvent::class => 'onHttpCacheGenerateKeyEvent'
         ];
     }
 
@@ -36,11 +36,11 @@ class CacheEventsSubscriber implements EventSubscriberInterface
             $logOnCacheHit = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logOnCacheHit');
 
             if ($logOnCacheHit) {
-                $requestUri = $event->getRequest()->getRequestUri();
-                $itemKey = $event->getItem()->getKey();
+                $requestUri = $event->request->getRequestUri();
+                $itemKey = $event->item->getKey();
 
-                $ttl = $event->getResponse()->getTtl();
-                $maxAge = $event->getResponse()->getMaxAge();
+                $ttl = $event->response->getTtl();
+                $maxAge = $event->response->getMaxAge();
 
                 $this->logger->info('CacheHitEvent | ' . $requestUri .' | ' . $itemKey . ' |  TTL: ' .  $ttl . ' maxAge: ' .  $maxAge);
             }
@@ -49,19 +49,19 @@ class CacheEventsSubscriber implements EventSubscriberInterface
         }
     }
 
-    public function onCacheItemWritten(HttpCacheItemWrittenEvent $event): void
+    public function onCacheItemWritten(HttpCacheStoreEvent $event): void
     {
         try {
             $logOnCacheItemWritten = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logOnCacheItemWritten');
             $logTagsOnCacheItemWritten = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logTagsOnCacheItemWritten');
 
             if ($logOnCacheItemWritten) {
-                $requestUri = $event->getRequest()->getRequestUri();
-                $itemKey = $event->getItem()->getKey();
-                $tags = $event->getTags();
+                $requestUri = $event->request->getRequestUri();
+                $itemKey = $event->item->getKey();
+                $tags = $event->tags;
 
-                $ttl = $event->getResponse()->getTtl();
-                $maxAge = $event->getResponse()->getMaxAge();
+                $ttl = $event->response->getTtl();
+                $maxAge = $event->response->getMaxAge();
 
                 if ($logTagsOnCacheItemWritten) {
                     $this->logger->info('CacheItemWrittenEvent | ' . $requestUri .' | ' . $itemKey . ' |  TTL: ' .  $ttl . ' maxAge: ' .  $maxAge . ' Tags: ' .  json_encode($tags));
@@ -88,34 +88,36 @@ class CacheEventsSubscriber implements EventSubscriberInterface
         }
     }
 
-    public function onHttpCacheGenerateKeyEvent(HttpCacheGenerateKeyEvent $event): void
+    public function onHttpCacheGenerateKeyEvent(HttpCacheKeyEvent $event): void
     {
         try {
             $logHttpCacheGenerateKeyEvent = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logHttpCacheGenerateKeyEvent');
 
 
+            $cookies    = $event->request->cookies;
+            $attributes = $event->request->attributes;
+
             if ($logHttpCacheGenerateKeyEvent) {
-                $requestUri = $event->getRequest()->getRequestUri();
-                $hash = $event->getHash();
-
+                $requestUri = $event->request->getRequestUri();
+                $hash = $event->get('hash');
                 $httpCacheKey = 'http-cache-' . $hash;
-
-                if ($event->getRequest()->cookies->has(CacheResponseSubscriber::CONTEXT_CACHE_COOKIE)) {
-                    $val = $event->getRequest()->cookies->get(CacheResponseSubscriber::CONTEXT_CACHE_COOKIE);
+                
+                if ($cookies->has(CacheResponseSubscriber::CONTEXT_CACHE_COOKIE)) {
+                    $val = $cookies->get(CacheResponseSubscriber::CONTEXT_CACHE_COOKIE);
                     $httpCacheKey = 'http-cache-' . hash('sha256', $hash . '-' . $val);
                     $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' ' .CacheResponseSubscriber::CONTEXT_CACHE_COOKIE . ': ' . $val);
                     return;
                 }
 
-                if ($event->getRequest()->cookies->has(CacheResponseSubscriber::CURRENCY_COOKIE)) {
-                    $val = $event->getRequest()->cookies->get(CacheResponseSubscriber::CURRENCY_COOKIE);
+                if ($cookies->has(CacheResponseSubscriber::CURRENCY_COOKIE)) {
+                    $val = $cookies->get(CacheResponseSubscriber::CURRENCY_COOKIE);
                     $httpCacheKey = 'http-cache-' . hash('sha256', $hash . '-' . $val);
                     $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' ' . CacheResponseSubscriber::CURRENCY_COOKIE . ': ' . $val);
                     return;
                 }
 
-                if ($event->getRequest()->attributes->has(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID)) {
-                    $val = $event->getRequest()->attributes->get(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID);
+                if ($attributes->has(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID)) {
+                    $val = $attributes->get(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID);
                     $httpCacheKey =  'http-cache-' . hash('sha256', $hash . '-' . $val);
                     $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' ' . SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID . ': ' . $val);
                     return;

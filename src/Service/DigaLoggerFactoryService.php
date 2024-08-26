@@ -33,6 +33,7 @@ class DigaLoggerFactoryService {
             $this->logger = $logger;
         } else {
             //instantiate new Logger instance
+            /** @var Logger $logger */
             $this->logger = new Logger('file_logger');
             $this->logger->pushHandler(new RotatingFileHandler($logFile, 0, Level::Debug));
         }
