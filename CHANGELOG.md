@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Removed
 
+## [3.0.1] - 13.07.2025
+- add option to log full url including schema and host
+- change cache key generator logic to new sw6.6 way
+- log parts used to generate cachekey
+
 ## [3.0.1] - 20.06.2025
 - Changed plugin icon
 

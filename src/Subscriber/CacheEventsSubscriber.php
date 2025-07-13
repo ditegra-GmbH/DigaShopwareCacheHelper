@@ -13,6 +13,8 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Framework\Adapter\Cache\InvalidateCacheEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Shopware\Core\Framework\Adapter\Cache\Http\CacheResponseSubscriber;
+use Shopware\Core\Framework\Util\Hasher;
+use Shopware\Core\Framework\Feature;
 
 class CacheEventsSubscriber implements EventSubscriberInterface
 {
@@ -37,6 +39,10 @@ class CacheEventsSubscriber implements EventSubscriberInterface
 
             if ($logOnCacheHit) {
                 $requestUri = $event->request->getRequestUri();
+                $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+                if ($logFullUri) {
+                    $requestUri = $event->request->getUri();
+                }
                 $itemKey = $event->item->getKey();
 
                 $ttl = $event->response->getTtl();
@@ -57,6 +63,10 @@ class CacheEventsSubscriber implements EventSubscriberInterface
 
             if ($logOnCacheItemWritten) {
                 $requestUri = $event->request->getRequestUri();
+                $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+                if ($logFullUri) {
+                    $requestUri = $event->request->getUri();
+                }
                 $itemKey = $event->item->getKey();
                 $tags = $event->tags;
 
@@ -91,14 +101,28 @@ class CacheEventsSubscriber implements EventSubscriberInterface
     public function onHttpCacheGenerateKeyEvent(HttpCacheKeyEvent $event): void
     {
         try {
-            $logHttpCacheGenerateKeyEvent = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logHttpCacheGenerateKeyEvent');
-
-
+            $logHttpCacheGenerateKeyEvent = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logHttpCacheGenerateKeyEvent');                       
             $cookies    = $event->request->cookies;
             $attributes = $event->request->attributes;
 
             if ($logHttpCacheGenerateKeyEvent) {
+
                 $requestUri = $event->request->getRequestUri();
+                $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+                if ($logFullUri) {
+                    $requestUri = $event->request->getUri();
+                }
+                
+                if (Feature::isActive('v6.6.0.0')) {
+                    
+                    $parts = $event->getParts();
+                    // @phpstan-ignore-next-line
+                    $httpCacheKey = 'http-cache-' . Hasher::hash(implode('|', $parts));
+
+                    $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' | parts: ' . json_encode($parts));
+                    return;
+                }
+                
                 $hash = $event->get('hash');
                 $httpCacheKey = 'http-cache-' . $hash;
                 

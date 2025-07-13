@@ -1,4 +1,5 @@
 # This workflow is meant to be used to build a compatible (validated) plugin run stan, run tests and deploy to staging environment. also install and activate the extension
+# Version 0.0.2
 
 name: Build validate & deploy
 on:
@@ -8,7 +9,7 @@ on:
         description: 'The shopware version to build the extension with'
         required: false
         type: string
-        default: '6.6.4'
+        default: '6.6.10'
       cliVersion:
         description: 'The shopware-cli version to build the extension with'
         required: false
@@ -32,8 +33,8 @@ env:
   EXTENSION_NAME: ${{ github.event.repository.name }}
   
 jobs:  
-  build:
-    container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.6.4' }}
+  deploy:
+    container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.6.10' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -48,11 +49,11 @@ jobs:
         with:
           version: ${{ env.SHOPWARE_CLI_VERSION }}
       
-      - name: Run static code analysis with stan
+      - name: Run static code analysis with stan and cs fixer for twig
         run: |
           composer update
           make dev
-          make stan
+          make validate
           make clean
 
       - name: Build extension
@@ -76,28 +77,28 @@ jobs:
       - name: Create zip and install devs
         run: |
           make zip
-          ls -a ../.build
-          echo "ZIP_FILENAME=$(ls -1t ../.build  | head -n 1)" >> $GITHUB_ENV
+          ls -a ./artifacts
+          echo "ZIP_FILENAME=$(ls -1t ./artifacts  | head -n 1)" >> $GITHUB_ENV
           composer --version
 
       - name: Validate plugin zip for shopware store compatibility
         run: |
-          shopware-cli extension validate ../.build/$ZIP_FILENAME
+          shopware-cli extension validate ./artifacts/$ZIP_FILENAME
           
       - name: Upload artifacts to git
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: ../.build/
+          path: ./artifacts/
           
       - name: Copy zip to staging
-        uses: garygrossgarten/github-action-scp@release   
+        uses: appleboy/scp-action@v0.1.7
         with:
-          local: ../.build
-          remote:  ${{ env.STAGING_EXTENSION_PATH }}
           host: ${{ env.STAGING_HOST }} 
           username: ${{ secrets.STAGING_SW65_USER }}
           password: ${{ secrets.STAGING_SW65_SECRET }}
+          source: "artifacts/${{ env.ZIP_FILENAME }}"
+          target: ${{ env.STAGING_EXTENSION_PATH }}
      
       - name: Install plugin on staging
         uses: appleboy/ssh-action@v1.0.0
@@ -109,8 +110,9 @@ jobs:
           script: |
             cd $STAGING_EXTENSION_PATH
             pwd
-            bin/console plugin:zip-import $ZIP_FILENAME
+            bin/console plugin:zip-import artifacts/$ZIP_FILENAME
             bin/console plugin:update $EXTENSION_NAME       
             bin/console plugin:install -a $EXTENSION_NAME
+            bin/console theme:compile
             bin/console cache:clear
-            rm -rf $ZIP_FILENAME
+            rm -rf artifacts/$ZIP_FILENAME

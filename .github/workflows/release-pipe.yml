@@ -1,7 +1,7 @@
-# This workflow is meant to be used to build compatible plugin  with composer and create github release without shopware store
-# check comments to build using 6.4 shopware version
+# This workflow is meant to be used to build a compatible (validated) plugin run stan and run tests
+# Version 0.0.2
 
-name: Build validate & create release
+name: Build & validate
 on:
   workflow_dispatch:
     inputs:
@@ -9,41 +9,38 @@ on:
         description: 'The shopware version to build the extension with'
         required: false
         type: string
-        default: '6.6.4'
+        default: '6.6.10'
       cliVersion:
         description: 'The shopware-cli version to build the extension with'
         required: false
         type: string
         default: 'latest'
+  pull_request:
 
 env:
-    SHOPWARE_CLI_VERSION: ${{ inputs.cliVersion || 'latest' }}
-    EXTENSION_NAME: ${{ github.event.repository.name }}
-
-jobs:
-  Release:
-    container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.6.4' }}
+  SHOPWARE_CLI_VERSION: ${{ inputs.cliVersion || 'latest' }}
+  EXTENSION_NAME: ${{ github.event.repository.name }}
+  
+jobs:  
+  build:
+    container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.6.10' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Specify safe directory for git
-        run: |
-            git config --global --add safe.directory $(pwd)
       
       - name: Install shopware-cli
         uses: FriendsOfShopware/shopware-cli-action@v1
         with:
           version: ${{ env.SHOPWARE_CLI_VERSION }}
       
-      - name: Run static code analysis with stan
-        run: |
-          composer update
-          echo "PLUGIN_NAME=$(echo $ZIP_FILENAME | grep -E '^[a-zA-Z]+' -o)" >> $GITHUB_ENV
-          make dev
-          make stan
-          make clean
+      # - name: Run static code analysis with stan and cs fixer for twig
+      #   run: |
+      #     composer update
+      #     echo "PLUGIN_NAME=$(echo $ZIP_FILENAME | grep -E '^[a-zA-Z]+' -o)" >> $GITHUB_ENV
+      #     make dev
+      #     make validate
+      #     make clean
 
       - name: Build extension
         run: |
@@ -58,55 +55,23 @@ jobs:
           if test -f "./src/Resources/app/package.json"; then
               npm install --prefix "./src/Resources/app/" --unsafe-perm
           fi
-          
           rm -rf ./.github
           shopware-cli --version
           shopware-cli extension build .
 
-      - name: Create zip with makefile
+      - name: Create zip and install devs
         run: |
           make zip
-          ls -a ../.build
-          echo "ZIP_FILENAME=$(ls -1t ../.build  | head -n 1)" >> $GITHUB_ENV
+          ls -a ./artifacts
+          echo "ZIP_FILENAME=$(ls -1t ./artifacts  | head -n 1)" >> $GITHUB_ENV
           composer --version
 
       - name: Validate plugin zip for shopware store compatibility
         run: |
-          shopware-cli extension validate ../.build/$ZIP_FILENAME
-      
+          shopware-cli extension validate ./artifacts/$ZIP_FILENAME
+          
       - name: Upload artifacts to git
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: ../.build/
-          
-      - name: Get version
-        run: >
-          echo "EXTENSION_VERSION=$(jq ".version" composer.json -r)" >> $GITHUB_ENV
-      - uses: mukunku/tag-exists-action@v1.2.0
-        id: checkTag
-        with:
-          tag: v${{ env.EXTENSION_VERSION }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-              
-      - name: Extract changelog for release version
-        shell: bash
-        working-directory: ${{ github.workspace }}
-        run: >
-          echo "Pattern used for sed: /^## \\[${EXTENSION_VERSION}\\]/,/^## / ! d"       
-          
-          find . -iname "changelog.md" -exec sed -e "/^## \\[${EXTENSION_VERSION}\\]/,/^## / ! d" {} \; | head -n -1 >> RELEASE.md
-          
-          printf "\n" >> RELEASE.md          
-          
-          cat RELEASE.md 
-
-      - name: Create a GitHub release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: ../.build/*.zip
-          tag: v${{ env.EXTENSION_VERSION }}
-          name: v${{ env.EXTENSION_VERSION }}
-          commit: ${{ github.sha }}
-          bodyFile: ./RELEASE.md
+          path: ./artifacts/

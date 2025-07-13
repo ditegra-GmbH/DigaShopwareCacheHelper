@@ -35,26 +35,59 @@ class CacheKeyEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            PaymentMethodRouteCacheKeyEvent::class => 'onCacheKey',
-            ShippingMethodRouteCacheKeyEvent::class => 'onCacheKey',
-            CategoryRouteCacheKeyEvent::class => 'onCacheKey',
-            NavigationRouteCacheKeyEvent::class => 'onCacheKey',
-            LandingPageRouteCacheKeyEvent::class => 'onCacheKey',
-            CrossSellingRouteCacheKeyEvent::class => 'onCacheKey',
-            ProductDetailRouteCacheKeyEvent::class => 'onCacheKey',
-            ProductListingRouteCacheKeyEvent::class => 'onCacheKey',
-            ProductSearchRouteCacheKeyEvent::class => 'onCacheKey',
-            ProductSuggestRouteCacheKeyEvent::class => 'onCacheKey',
-            SitemapRouteCacheKeyEvent::class => 'onCacheKey',
-            CountryRouteCacheKeyEvent::class => 'onCacheKey',
-            CountryStateRouteCacheKeyEvent::class => 'onCacheKey',
-            CurrencyRouteCacheKeyEvent::class => 'onCacheKey',
-            LanguageRouteCacheKeyEvent::class => 'onCacheKey',
-            SalutationRouteCacheKeyEvent::class => 'onCacheKey',
+            PaymentMethodRouteCacheKeyEvent::class => 'onPaymentMethodRouteCacheKeyEvent',
+            StoreApiRouteCacheKeyEvent::class => 'onStoreApiRouteCacheKeyEvent',
+            ShippingMethodRouteCacheKeyEvent::class => 'onShippingMethodRouteCacheKeyEvent',
+            CategoryRouteCacheKeyEvent::class => 'onCategoryRouteCacheKeyEvent',
+            NavigationRouteCacheKeyEvent::class => 'onNavigationRouteCacheKeyEvent',
+            LandingPageRouteCacheKeyEvent::class => 'onLandingPageRouteCacheKeyEvent',
+            CrossSellingRouteCacheKeyEvent::class => 'onCrossSellingRouteCacheKeyEvent',
+            ProductDetailRouteCacheKeyEvent::class => 'onProductDetailRouteCacheKeyEvent',
+            ProductListingRouteCacheKeyEvent::class => 'onProductListingRouteCacheKeyEvent',
+            ProductSearchRouteCacheKeyEvent::class => 'onProductSearchRouteCacheKeyEvent',
+            ProductSuggestRouteCacheKeyEvent::class => 'onProductSuggestRouteCacheKeyEvent',
+            SitemapRouteCacheKeyEvent::class => 'onSitemapRouteCacheKeyEvent',
+            CountryRouteCacheKeyEvent::class => 'onCountryRouteCacheKeyEvent',
+            CountryStateRouteCacheKeyEvent::class => 'onCountryStateRouteCacheKeyEvent',
+            CurrencyRouteCacheKeyEvent::class => 'onCurrencyRouteCacheKeyEvent',
+            LanguageRouteCacheKeyEvent::class => 'onLanguageRouteCacheKeyEvent',
+            SalutationRouteCacheKeyEvent::class => 'onSalutationRouteCacheKeyEvent',
         ];
     }
 
-    public function onCacheKey(StoreApiRouteCacheKeyEvent $event): void
+    public function onPaymentMethodRouteCacheKeyEvent(PaymentMethodRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
+
+            if ($event instanceof PaymentMethodRouteCacheKeyEvent) {
+                $key = 'payment-method-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(Json::encode($event->getParts()));
+            }
+
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }
+
+    public function onStoreApiRouteCacheKeyEvent(StoreApiRouteCacheKeyEvent $event): void
     {
         try {
             $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
@@ -73,73 +106,491 @@ class CacheKeyEventSubscriber implements EventSubscriberInterface
                 $key = 'payment-method-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(Json::encode($event->getParts()));
             }
 
-            if ($event instanceof PaymentMethodRouteCacheKeyEvent) {
-                $key = 'payment-method-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(Json::encode($event->getParts()));
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }
+
+    public function onShippingMethodRouteCacheKeyEvent(ShippingMethodRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
             }
+
+            $parts = $event->getParts();
+            $key = '';
 
             if ($event instanceof ShippingMethodRouteCacheKeyEvent) {
                 $key = 'shipping-method-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(Json::encode($event->getParts()));
             }
 
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }
+
+    public function onCategoryRouteCacheKeyEvent(CategoryRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
+
             if ($event instanceof CategoryRouteCacheKeyEvent) {
                 $key = 'category-route-' . $event->getNavigationId(). '-' . md5(Json::encode($event->getParts()));
             }
+
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }
+
+    public function onNavigationRouteCacheKeyEvent(NavigationRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
 
             if ($event instanceof NavigationRouteCacheKeyEvent) {
                 $key = 'navigation-route-' . $event->getActive(). '-' . md5(Json::encode($event->getParts()));
             }
 
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }
+
+    public function onLandingPageRouteCacheKeyEvent(LandingPageRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
+
             if ($event instanceof LandingPageRouteCacheKeyEvent) {
                 $key = 'landing-page-route-' . $event->getLandingPageId() . '-' . md5(Json::encode($event->getParts()));
             }
+
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }
+
+    public function onCrossSellingRouteCacheKeyEvent(CrossSellingRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
 
             if ($event instanceof CrossSellingRouteCacheKeyEvent) {
                 $key = 'cross-selling-route-' . $event->getProductId() . '-' . md5(Json::encode($event->getParts()));
             }
 
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }
+
+    public function onProductDetailRouteCacheKeyEvent(ProductDetailRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
+
             if ($event instanceof ProductDetailRouteCacheKeyEvent) {
                 $key = 'product-detail-route-' . 'prodid-should-be-here' . '-' . md5(Json::encode($event->getParts()));
             }
+
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }    
+
+    public function onProductListingRouteCacheKeyEvent(ProductListingRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
 
             if ($event instanceof ProductListingRouteCacheKeyEvent) {
                 $key = 'product-listing-route-' . $event->getCategoryId() . '-' . md5(Json::encode($event->getParts()));
             }
 
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }    
+
+    public function onProductSearchRouteCacheKeyEvent(ProductSearchRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
+
             if ($event instanceof ProductSearchRouteCacheKeyEvent) {
                 $key = 'product-search-route' . '-' . md5(Json::encode($event->getParts()));
             }
+
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }    
+
+    public function onProductSuggestRouteCacheKeyEvent(ProductSuggestRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
 
             if ($event instanceof ProductSuggestRouteCacheKeyEvent) {
                 $key = 'product-suggest-route' . '-' . md5(Json::encode($event->getParts()));
             }
 
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }    
+
+    public function onSitemapRouteCacheKeyEvent(SitemapRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
+
             if ($event instanceof SitemapRouteCacheKeyEvent) {
                 $key = 'sitemap-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(Json::encode($event->getParts()));
             }
+
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }    
+
+    public function onCountryRouteCacheKeyEvent(CountryRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
 
             if ($event instanceof CountryRouteCacheKeyEvent) {
                 $key = 'country-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(Json::encode($event->getParts()));
             }
 
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }    
+
+    public function onCountryStateRouteCacheKeyEvent(CountryStateRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
+
             if ($event instanceof CountryStateRouteCacheKeyEvent) {
                 $key = 'country-state-route-' . 'countryid-should-be-here' . '-' . md5(Json::encode($event->getParts()));
             }
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }    
+
+    public function onCurrencyRouteCacheKeyEvent(CurrencyRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
 
             if ($event instanceof CurrencyRouteCacheKeyEvent) {
                 $key = 'currency-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(Json::encode($event->getParts()));
             }
 
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }    
+
+    public function onLanguageRouteCacheKeyEvent(LanguageRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
+
             if ($event instanceof LanguageRouteCacheKeyEvent) {
                 $key = 'language-route-' . $event->getContext()->getSalesChannelId(). '-' . md5(Json::encode($event->getParts()));
             }
+            $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
+
+            $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }    
+
+    public function onSalutationRouteCacheKeyEvent(SalutationRouteCacheKeyEvent $event): void
+    {
+        try {
+            $selectedCacheTagEvents = $this->systemConfigService->get('DigaShopwareCacheHelper.config.selectedCacheTagEvents');
+            $parts = explode('\\', $event::class);
+            $eventClass = array_pop($parts);
+
+            // if $eventClass exist in $selectedCacheTagEvents array
+            if (is_array($selectedCacheTagEvents) && !in_array($eventClass, $selectedCacheTagEvents)) {
+                return;
+            }
+
+            $parts = $event->getParts();
+            $key = '';
 
             if ($event instanceof SalutationRouteCacheKeyEvent) {
                 $key = 'salutation-route' . '-' . md5(Json::encode($event->getParts()));
             }
-
             $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+            if ($logFullUri) {
+                $requestUri = $event->getRequest()->getUri();
+            }               
 
             $this->logger->info($eventClass . ' | '. $requestUri .' | ' . $key . ' | '. json_encode($parts));
+
         } catch (\Throwable $th) {
             $this->logger->error($th->getMessage());
         }
