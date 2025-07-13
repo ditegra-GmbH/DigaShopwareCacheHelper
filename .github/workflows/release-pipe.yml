@@ -1,7 +1,7 @@
-# This workflow is meant to be used to build a compatible (validated) plugin run stan and run tests
+# This workflow is meant to be used to build compatible plugin  with composer and create github release without shopware store
 # Version 0.0.2
 
-name: Build & validate
+name: Build validate & create release
 on:
   workflow_dispatch:
     inputs:
@@ -15,19 +15,22 @@ on:
         required: false
         type: string
         default: 'latest'
-  pull_request:
 
 env:
-  SHOPWARE_CLI_VERSION: ${{ inputs.cliVersion || 'latest' }}
-  EXTENSION_NAME: ${{ github.event.repository.name }}
-  
-jobs:  
-  build:
+    SHOPWARE_CLI_VERSION: ${{ inputs.cliVersion || 'latest' }}
+    EXTENSION_NAME: ${{ github.event.repository.name }}
+
+jobs:
+  Release:
     container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.6.10' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Specify safe directory for git
+        run: |
+            git config --global --add safe.directory $(pwd)
       
       - name: Install shopware-cli
         uses: FriendsOfShopware/shopware-cli-action@v1
@@ -55,11 +58,12 @@ jobs:
           if test -f "./src/Resources/app/package.json"; then
               npm install --prefix "./src/Resources/app/" --unsafe-perm
           fi
+          
           rm -rf ./.github
           shopware-cli --version
           shopware-cli extension build .
 
-      - name: Create zip and install devs
+      - name: Create zip with makefile
         run: |
           make zip
           ls -a ./artifacts
@@ -69,9 +73,40 @@ jobs:
       - name: Validate plugin zip for shopware store compatibility
         run: |
           shopware-cli extension validate ./artifacts/$ZIP_FILENAME
-          
+      
       - name: Upload artifacts to git
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: ./artifacts/
+          
+      - name: Get version
+        run: >
+          echo "EXTENSION_VERSION=$(jq ".version" composer.json -r)" >> $GITHUB_ENV
+      - uses: mukunku/tag-exists-action@v1.2.0
+        id: checkTag
+        with:
+          tag: v${{ env.EXTENSION_VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+              
+      - name: Extract changelog for release version
+        shell: bash
+        working-directory: ${{ github.workspace }}
+        run: >
+          echo "Pattern used for sed: /^## \\[${EXTENSION_VERSION}\\]/,/^## / ! d"       
+          
+          find . -iname "changelog.md" -exec sed -e "/^## \\[${EXTENSION_VERSION}\\]/,/^## / ! d" {} \; | head -n -1 >> RELEASE.md
+          
+          printf "\n" >> RELEASE.md          
+          
+          cat RELEASE.md 
+
+      - name: Create a GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ./artifacts/*.zip
+          tag: v${{ env.EXTENSION_VERSION }}
+          name: v${{ env.EXTENSION_VERSION }}
+          commit: ${{ github.sha }}
+          bodyFile: ./RELEASE.md
