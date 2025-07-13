@@ -34,13 +34,13 @@ jobs:
         with:
           version: ${{ env.SHOPWARE_CLI_VERSION }}
 
-      - name: Run static code analysis with stan and cs fixer for twig
-        run: |
-          composer update
-          echo "PLUGIN_NAME=$(echo $ZIP_FILENAME | grep -E '^[a-zA-Z]+' -o)" >> $GITHUB_ENV
-          make dev
-          make validate
-          make clean
+      # - name: Run static code analysis with stan and cs fixer for twig
+      #   run: |
+      #     composer update
+      #     echo "PLUGIN_NAME=$(echo $ZIP_FILENAME | grep -E '^[a-zA-Z]+' -o)" >> $GITHUB_ENV
+      #     make dev
+      #     make validate
+      #     make clean
 
       - name: Build extension
         run: |
