@@ -116,6 +116,7 @@ class CacheEventsSubscriber implements EventSubscriberInterface
                 if (Feature::isActive('v6.6.0.0')) {
                     
                     $parts = $event->getParts();
+                    // @phpstan-ignore-next-line
                     $httpCacheKey = 'http-cache-' . Hasher::hash(implode('|', $parts));
 
                     $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' | parts: ' . json_encode($parts));
