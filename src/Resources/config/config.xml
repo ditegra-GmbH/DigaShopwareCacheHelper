@@ -11,6 +11,15 @@
         </component>
 
         <input-field type="bool">
+            <name>logFullUri</name>
+            <label>Log full url</label>
+            <label lang="de-DE">Logge vollständige URL</label>
+            <helpText>log full url including schema and host</helpText>
+            <helpText lang="de-DE">Protokollieren Sie die vollständige URL einschließlich Schema und Host</helpText>
+            <defaultValue>true</defaultValue>
+        </input-field>
+
+        <input-field type="bool">
             <name>logOnCacheHit</name>
             <label>Log onCacheHit</label>
             <label lang="de-DE">Logge onCacheHit</label>

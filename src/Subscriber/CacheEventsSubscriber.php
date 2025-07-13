@@ -39,6 +39,10 @@ class CacheEventsSubscriber implements EventSubscriberInterface
 
             if ($logOnCacheHit) {
                 $requestUri = $event->request->getRequestUri();
+                $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+                if ($logFullUri) {
+                    $requestUri = $event->request->getUri();
+                }
                 $itemKey = $event->item->getKey();
 
                 $ttl = $event->response->getTtl();
@@ -59,6 +63,10 @@ class CacheEventsSubscriber implements EventSubscriberInterface
 
             if ($logOnCacheItemWritten) {
                 $requestUri = $event->request->getRequestUri();
+                $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+                if ($logFullUri) {
+                    $requestUri = $event->request->getUri();
+                }
                 $itemKey = $event->item->getKey();
                 $tags = $event->tags;
 
@@ -93,14 +101,18 @@ class CacheEventsSubscriber implements EventSubscriberInterface
     public function onHttpCacheGenerateKeyEvent(HttpCacheKeyEvent $event): void
     {
         try {
-            $logHttpCacheGenerateKeyEvent = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logHttpCacheGenerateKeyEvent');           
-
+            $logHttpCacheGenerateKeyEvent = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logHttpCacheGenerateKeyEvent');                       
             $cookies    = $event->request->cookies;
             $attributes = $event->request->attributes;
 
             if ($logHttpCacheGenerateKeyEvent) {
 
                 $requestUri = $event->request->getRequestUri();
+                $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+                if ($logFullUri) {
+                    $requestUri = $event->request->getUri();
+                }
+                
                 if (Feature::isActive('v6.6.0.0')) {
                     
                     $parts = $event->getParts();

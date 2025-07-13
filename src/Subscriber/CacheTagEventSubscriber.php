@@ -67,6 +67,10 @@ class CacheTagEventSubscriber implements EventSubscriberInterface
 
             $tags = $event->getTags();
             $requestUri = $event->getRequest()->getRequestUri();
+            $logFullUri = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logFullUri');
+                if ($logFullUri) {
+                    $requestUri = $event->getRequest()->getUri();
+                }
             $this->logger->info($eventClass . ' | '. $requestUri . ' |  | ' . json_encode($tags));
         } catch (\Throwable $th) {
             $this->logger->error($th->getMessage());
