@@ -29,7 +29,7 @@ clean: ## Cleans all dependencies
 
 build: ## Installs the plugin, and builds the artifacts using the Shopware build commands (requires Shopware)
 	cd /var/www/html && php bin/console plugin:refresh
-	cd /var/www/html && php bin/console plugin:install DigaGithubActions --activate | true
+	cd /var/www/html && php bin/console plugin:install DigaShopwareCacheHelper --activate | true
 	cd /var/www/html && php bin/console plugin:refresh
 	cd /var/www/html && ./bin/build-js.sh
 	cd /var/www/html && php bin/console theme:refresh
@@ -45,8 +45,8 @@ zip: ## create zip
 	@make clean
 	$(eval VERS := $(shell cat composer.json | jq '.version'))
 	@echo Create zip for version: $(VERS)
-	rm -rf ./artifacts/DigaGithubActions* && mkdir -p ./artifacts
-	cd .. && zip -qq -r -0 DigaGithubActions/artifacts/DigaGithubActions_$(VERS).zip DigaGithubActions/ -x '*.editorconfig' '*.git*' '*.reports*' '*/.idea*' '*/tests*' '*/node_modules*' '*/makefile' '*.DS_Store' '*/switch-composer.php' '*/phpunit.xml' '*/.infection.json' '*/phpunit.autoload.php' '*/.phpstan*' '*/.php_cs.php' '*/phpinsights.php' '*/artifacts*' '*.twig-cs-fixer*'
+	rm -rf ./artifacts/DigaShopwareCacheHelper* && mkdir -p ./artifacts
+	cd .. && zip -qq -r -0 DigaShopwareCacheHelper/artifacts/DigaShopwareCacheHelper_$(VERS).zip DigaShopwareCacheHelper/ -x '*.editorconfig' '*.git*' '*.reports*' '*/.idea*' '*/tests*' '*/node_modules*' '*/makefile' '*.DS_Store' '*/switch-composer.php' '*/phpunit.xml' '*/.infection.json' '*/phpunit.autoload.php' '*/.phpstan*' '*/.php_cs.php' '*/phpinsights.php' '*/artifacts*' '*.twig-cs-fixer*'
 
 release: ## Builds a production version and creates a ZIP file in <PLUGIN_ROOT>/artifacts
 	@make clean
