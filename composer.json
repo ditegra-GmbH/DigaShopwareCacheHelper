@@ -33,13 +33,15 @@
     }
   },
   "require": {
-    "shopware/core": "~6.6.0",
-    "shopware/storefront": "~6.6.0"
+    "shopware/core": "~6.7.1",
+    "shopware/storefront": "~6.7.1"
   },
   "require-dev": {
       "phpunit/phpunit": "*",
       "phpstan/phpstan": "*",
-      "friendsofphp/php-cs-fixer": "*"
+      "friendsofphp/php-cs-fixer": "*",
+    "rector/rector": "^2.1",
+    "frosh/shopware-rector": "^0.5.6"
   },
   "config": {
     "allow-plugins": {

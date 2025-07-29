@@ -15,6 +15,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Shopware\Core\Framework\Adapter\Cache\Http\CacheResponseSubscriber;
 use Shopware\Core\Framework\Util\Hasher;
 use Shopware\Core\Framework\Feature;
+use Shopware\Core\Content\Product\Events\InvalidateProductCache;
 
 class CacheEventsSubscriber implements EventSubscriberInterface
 {
@@ -28,7 +29,8 @@ class CacheEventsSubscriber implements EventSubscriberInterface
             HttpCacheStoreEvent::class => 'onCacheItemWritten',
             HttpCacheHitEvent::class => 'onCacheHit',
             InvalidateCacheEvent::class => 'onInvalidateCache',
-            HttpCacheKeyEvent::class => 'onHttpCacheGenerateKeyEvent'
+            HttpCacheKeyEvent::class => 'onHttpCacheGenerateKeyEvent',
+            InvalidateProductCache::class => 'onInvalidateProductCache'
         ];
     }
 
@@ -148,6 +150,18 @@ class CacheEventsSubscriber implements EventSubscriberInterface
                 }
 
                 $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' no cookies');
+            }
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }
+
+    public function onInvalidateProductCache(InvalidateProductCache $event): void
+    {
+        try {
+            $logInvalidateProductCache = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logInvalidateProductCache');
+            if ($logInvalidateProductCache) {
+                $this->logger->info('InvalidateProductCache |  |  |  ids ' . json_encode($event->getIds()) . ' force: ' . ($event->force ? 'true' : 'false'));
             }
         } catch (\Throwable $th) {
             $this->logger->error($th->getMessage());

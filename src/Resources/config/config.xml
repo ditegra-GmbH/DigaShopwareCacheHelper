@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
-
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
     <card>
         <title>General</title>
         <title lang="de-DE">Allgemein</title>
@@ -60,158 +58,13 @@
             <defaultValue>false</defaultValue>
         </input-field>  
 
-        <input-field type="multi-select">
-            <name>selectedCacheTagEvents</name>
-            <label>Select which Cache Tag Event should be logged</label>
-            <label  lang="de-DE">Wählen Sie aus, welches Cache-Tag-Ereignis protokolliert werden soll</label>
-            <options>
-                <option>
-                    <id>PaymentMethodRouteCacheTagsEvent</id>
-                    <name>PaymentMethodRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>ShippingMethodRouteCacheTagsEvent</id>
-                    <name>ShippingMethodRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>CategoryRouteCacheTagsEvent</id>
-                    <name>CategoryRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>NavigationRouteCacheTagsEvent</id>
-                    <name>NavigationRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>LandingPageRouteCacheTagsEvent</id>
-                    <name>LandingPageRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>CrossSellingRouteCacheTagsEvent</id>
-                    <name>CrossSellingRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>ProductDetailRouteCacheTagsEvent</id>
-                    <name>ProductDetailRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>ProductListingRouteCacheTagsEvent</id>
-                    <name>ProductListingRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>ProductSearchRouteCacheTagsEvent</id>
-                    <name>ProductSearchRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>ProductSuggestRouteCacheTagsEvent</id>
-                    <name>ProductSuggestRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>SitemapRouteCacheTagsEvent</id>
-                    <name>SitemapRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>StoreApiRouteCacheTagsEvent</id>
-                    <name>StoreApiRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>CountryRouteCacheTagsEvent</id>
-                    <name>CountryRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>CountryStateRouteCacheTagsEvent</id>
-                    <name>CountryStateRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>CurrencyRouteCacheTagsEvent</id>
-                    <name>CurrencyRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>LanguageRouteCacheTagsEvent</id>
-                    <name>LanguageRouteCacheTagsEvent</name>
-                </option>
-                <option>
-                    <id>SalutationRouteCacheTagsEvent</id>
-                    <name>SalutationRouteCacheTagsEvent</name>
-                </option>
-            </options>
-            <defaultValue>["NavigationRouteCacheTagsEvent", "CategoryRouteCacheTagsEvent", "LandingPageRouteCacheTagsEvent", "ProductDetailRouteCacheTagsEvent", "ProductListingRouteCacheTagsEvent"]</defaultValue>
-        </input-field>
-
-        <input-field type="multi-select">
-            <name>selectedCacheKeyEvents</name>
-            <label>Select which Cache Key Event should be logged</label>
-            <label lang="de-DE">Wählen Sie aus, welches Cache-Key-Ereignis protokolliert werden soll</label>
-            <options>
-                <option>
-                    <id>PaymentMethodRouteCacheKeyEvent</id>
-                    <name>PaymentMethodRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>ShippingMethodRouteCacheKeyEvent</id>
-                    <name>ShippingMethodRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>CategoryRouteCacheKeyEvent</id>
-                    <name>CategoryRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>NavigationRouteCacheKeyEvent</id>
-                    <name>NavigationRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>LandingPageRouteCacheKeyEvent</id>
-                    <name>LandingPageRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>CrossSellingRouteCacheKeyEvent</id>
-                    <name>CrossSellingRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>ProductDetailRouteCacheKeyEvent</id>
-                    <name>ProductDetailRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>ProductListingRouteCacheKeyEvent</id>
-                    <name>ProductListingRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>ProductSearchRouteCacheKeyEvent</id>
-                    <name>ProductSearchRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>ProductSuggestRouteCacheKeyEvent</id>
-                    <name>ProductSuggestRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>SitemapRouteCacheKeyEvent</id>
-                    <name>SitemapRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>StoreApiRouteCacheKeyEvent</id>
-                    <name>StoreApiRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>CountryRouteCacheKeyEvent</id>
-                    <name>CountryRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>CountryStateRouteCacheKeyEvent</id>
-                    <name>CountryStateRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>CurrencyRouteCacheKeyEvent</id>
-                    <name>CurrencyRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>LanguageRouteCacheKeyEvent</id>
-                    <name>LanguageRouteCacheKeyEvent</name>
-                </option>
-                <option>
-                    <id>SalutationRouteCacheKeyEvent</id>
-                    <name>SalutationRouteCacheKeyEvent</name>
-                </option>
-            </options>
-            <defaultValue>["NavigationRouteCacheKeyEvent", "CategoryRouteCacheKeyEvent", "LandingPageRouteCacheKeyEvent", "ProductDetailRouteCacheKeyEvent", "ProductListingRouteCacheKeyEvent"]</defaultValue>
+        <input-field type="bool">
+            <name>logInvalidateProductCache</name>
+            <label>Log InvalidateProductCache</label>
+            <label lang="de-DE">Logge InvalidateProductCache</label>
+            <helpText>Log when product cache is invalidated (InvalidateProductCache event)</helpText>
+            <helpText lang="de-DE">Protokolliert, wenn der Produkt-Cache invalidiert wird (InvalidateProductCache Event)</helpText>
+            <defaultValue>true</defaultValue>
         </input-field>
 
         <input-field type="single-select">
