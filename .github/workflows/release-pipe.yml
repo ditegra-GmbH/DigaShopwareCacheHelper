@@ -9,7 +9,7 @@ on:
         description: 'The shopware version to build the extension with'
         required: false
         type: string
-        default: '6.6.10'
+        default: '6.7.1'
       cliVersion:
         description: 'The shopware-cli version to build the extension with'
         required: false
@@ -22,7 +22,7 @@ env:
 
 jobs:
   Release:
-    container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.6.10' }}
+    container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.7.1' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,13 +37,13 @@ jobs:
         with:
           version: ${{ env.SHOPWARE_CLI_VERSION }}
       
-      # - name: Run static code analysis with stan and cs fixer for twig
-      #   run: |
-      #     composer update
-      #     echo "PLUGIN_NAME=$(echo $ZIP_FILENAME | grep -E '^[a-zA-Z]+' -o)" >> $GITHUB_ENV
-      #     make dev
-      #     make validate
-      #     make clean
+      - name: Run static code analysis with stan and cs fixer for twig
+        run: |
+          composer update
+          echo "PLUGIN_NAME=$(echo $ZIP_FILENAME | grep -E '^[a-zA-Z]+' -o)" >> $GITHUB_ENV
+          make dev
+          make validate
+          make clean
 
       - name: Build extension
         run: |

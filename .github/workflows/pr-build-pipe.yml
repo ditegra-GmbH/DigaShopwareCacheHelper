@@ -6,52 +6,52 @@ on:
   workflow_dispatch:
     inputs:
       shopwareVersion:
-        description: "The shopware version to build the extension with"
+        description: 'The shopware version to build the extension with'
         required: false
         type: string
-        default: "6.6.10"
+        default: '6.7.1'
       cliVersion:
-        description: "The shopware-cli version to build the extension with"
+        description: 'The shopware-cli version to build the extension with'
         required: false
         type: string
-        default: "latest"
+        default: 'latest'
   pull_request:
 
 env:
   SHOPWARE_CLI_VERSION: ${{ inputs.cliVersion || 'latest' }}
   EXTENSION_NAME: ${{ github.event.repository.name }}
-
-jobs:
+  
+jobs:  
   build:
-    container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.6.10' }}
+    container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.7.1' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
+      
       - name: Install shopware-cli
         uses: FriendsOfShopware/shopware-cli-action@v1
         with:
           version: ${{ env.SHOPWARE_CLI_VERSION }}
-
-      # - name: Run static code analysis with stan and cs fixer for twig
-      #   run: |
-      #     composer update
-      #     echo "PLUGIN_NAME=$(echo $ZIP_FILENAME | grep -E '^[a-zA-Z]+' -o)" >> $GITHUB_ENV
-      #     make dev
-      #     make validate
-      #     make clean
+      
+      - name: Run static code analysis with stan and cs fixer for twig
+        run: |
+          composer update
+          echo "PLUGIN_NAME=$(echo $ZIP_FILENAME | grep -E '^[a-zA-Z]+' -o)" >> $GITHUB_ENV
+          make dev
+          make validate
+          make clean
 
       - name: Build extension
         run: |
           if test -f "./src/Resources/app/administration/package.json"; then
               npm install --prefix "./src/Resources/app/administration/" --unsafe-perm
           fi
-
+          
           if test -f "./src/Resources/app/storefront/package.json"; then
               npm install --prefix "./src/Resources/app/storefront/" --unsafe-perm
           fi
-
+          
           if test -f "./src/Resources/app/package.json"; then
               npm install --prefix "./src/Resources/app/" --unsafe-perm
           fi
@@ -69,7 +69,7 @@ jobs:
       - name: Validate plugin zip for shopware store compatibility
         run: |
           shopware-cli extension validate ./artifacts/$ZIP_FILENAME
-
+          
       - name: Upload artifacts to git
         uses: actions/upload-artifact@v4
         with:

@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ### Removed
 
+## [4.0.0] - 29.07.2025
+- Updated to Shopware 6.7.1
+
 ## [3.0.1] - 13.07.2025
 - add option to log full url including schema and host
 - change cache key generator logic to new sw6.6 way

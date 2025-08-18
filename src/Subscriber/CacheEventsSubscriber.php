@@ -13,8 +13,10 @@ use Shopware\Core\System\SystemConfig\SystemConfigService;
 use Shopware\Core\Framework\Adapter\Cache\InvalidateCacheEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Shopware\Core\Framework\Adapter\Cache\Http\CacheResponseSubscriber;
+use Shopware\Core\Framework\Adapter\Cache\Http\HttpCacheKeyGenerator;
 use Shopware\Core\Framework\Util\Hasher;
 use Shopware\Core\Framework\Feature;
+use Shopware\Core\Content\Product\Events\InvalidateProductCache;
 
 class CacheEventsSubscriber implements EventSubscriberInterface
 {
@@ -28,7 +30,8 @@ class CacheEventsSubscriber implements EventSubscriberInterface
             HttpCacheStoreEvent::class => 'onCacheItemWritten',
             HttpCacheHitEvent::class => 'onCacheHit',
             InvalidateCacheEvent::class => 'onInvalidateCache',
-            HttpCacheKeyEvent::class => 'onHttpCacheGenerateKeyEvent'
+            HttpCacheKeyEvent::class => 'onHttpCacheGenerateKeyEvent',
+            InvalidateProductCache::class => 'onInvalidateProductCache'
         ];
     }
 
@@ -116,7 +119,6 @@ class CacheEventsSubscriber implements EventSubscriberInterface
                 if (Feature::isActive('v6.6.0.0')) {
                     
                     $parts = $event->getParts();
-                    // @phpstan-ignore-next-line
                     $httpCacheKey = 'http-cache-' . Hasher::hash(implode('|', $parts));
 
                     $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' | parts: ' . json_encode($parts));
@@ -126,17 +128,17 @@ class CacheEventsSubscriber implements EventSubscriberInterface
                 $hash = $event->get('hash');
                 $httpCacheKey = 'http-cache-' . $hash;
                 
-                if ($cookies->has(CacheResponseSubscriber::CONTEXT_CACHE_COOKIE)) {
-                    $val = $cookies->get(CacheResponseSubscriber::CONTEXT_CACHE_COOKIE);
+                if ($cookies->has(HttpCacheKeyGenerator::CONTEXT_CACHE_COOKIE)) {
+                    $val = $cookies->get(HttpCacheKeyGenerator::CONTEXT_CACHE_COOKIE);
                     $httpCacheKey = 'http-cache-' . hash('sha256', $hash . '-' . $val);
-                    $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' ' .CacheResponseSubscriber::CONTEXT_CACHE_COOKIE . ': ' . $val);
+                    $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' ' .HttpCacheKeyGenerator::CONTEXT_CACHE_COOKIE . ': ' . $val);
                     return;
                 }
 
-                if ($cookies->has(CacheResponseSubscriber::CURRENCY_COOKIE)) {
-                    $val = $cookies->get(CacheResponseSubscriber::CURRENCY_COOKIE);
+                if ($cookies->has(HttpCacheKeyGenerator::CURRENCY_COOKIE)) {
+                    $val = $cookies->get(HttpCacheKeyGenerator::CURRENCY_COOKIE);
                     $httpCacheKey = 'http-cache-' . hash('sha256', $hash . '-' . $val);
-                    $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' ' . CacheResponseSubscriber::CURRENCY_COOKIE . ': ' . $val);
+                    $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' ' . HttpCacheKeyGenerator::CURRENCY_COOKIE . ': ' . $val);
                     return;
                 }
 
@@ -148,6 +150,18 @@ class CacheEventsSubscriber implements EventSubscriberInterface
                 }
 
                 $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' no cookies');
+            }
+        } catch (\Throwable $th) {
+            $this->logger->error($th->getMessage());
+        }
+    }
+
+    public function onInvalidateProductCache(InvalidateProductCache $event): void
+    {
+        try {
+            $logInvalidateProductCache = $this->systemConfigService->get('DigaShopwareCacheHelper.config.logInvalidateProductCache');
+            if ($logInvalidateProductCache) {
+                $this->logger->info('InvalidateProductCache |  |  |  ids ' . json_encode($event->getIds()) . ' force: ' . ($event->force ? 'true' : 'false'));
             }
         } catch (\Throwable $th) {
             $this->logger->error($th->getMessage());

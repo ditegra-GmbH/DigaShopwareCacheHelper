@@ -36,7 +36,7 @@ So we cannot use the diga:http:cache:warmup command anymore.
 Install and activate
 
 ## Supported SW Version:
-sw 6.5.x, 6.6.x
+sw 6.5.x, 6.6.x, 6.7.x
 
 ## Dependencies:
 none
