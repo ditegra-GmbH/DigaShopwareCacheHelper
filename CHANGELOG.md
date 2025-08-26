@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ## [4.0.0] - 29.07.2025
-- Updated to Shopware 6.7.1
+- Updated to Shopware 6.7
 
 ## [3.0.1] - 13.07.2025
 - add option to log full url including schema and host

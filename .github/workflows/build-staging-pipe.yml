@@ -9,7 +9,7 @@ on:
         description: 'The shopware version to build the extension with'
         required: false
         type: string
-        default: '6.7.1'
+        default: '6.7.0'
       cliVersion:
         description: 'The shopware-cli version to build the extension with'
         required: false
@@ -34,7 +34,7 @@ env:
   
 jobs:  
   deploy:
-    container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.7.1' }}
+    container: ghcr.io/friendsofshopware/platform-plugin-dev:v${{ inputs.shopwareVersion || '6.7.0' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
