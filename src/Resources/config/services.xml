@@ -12,8 +12,17 @@
         </service>
         <service id="DigaShopwareCacheHelper\Subscriber\CacheEventsSubscriber">
             <argument type="service" id="DigaShopwareCacheHelper\Service\DigaLoggerFactoryService"/> 
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>             
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="request_stack"/>
             <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- Decorate Shopware's CacheInvalidator to add logging -->
+        <service id="DigaShopwareCacheHelper\Decorator\LoggingCacheInvalidator" decorates="Shopware\Core\Framework\Adapter\Cache\CacheInvalidator">
+            <argument type="service" id="DigaShopwareCacheHelper\Decorator\LoggingCacheInvalidator.inner"/>
+            <argument type="service" id="DigaShopwareCacheHelper\Service\DigaLoggerFactoryService"/>
+            <argument type="service" id="request_stack"/>
+            <argument>%kernel.environment%</argument>
         </service>
     </services>
 </container>
