@@ -23,9 +23,19 @@
 
         <service id="DigaShopwareCacheHelper\Subscriber\CacheEventsSubscriber">
             <argument type="service" id="DigaShopwareCacheHelper\Service\DigaLoggerFactoryService"/> 
-            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>             
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="request_stack"/>
             <tag name="kernel.event_subscriber"/>
         </service>
-
+        <service id="DigaShopwareCacheHelper\Decorator\LoggingCacheInvalidationSubscriber" decorates="Shopware\Core\Framework\Adapter\Cache\CacheInvalidationSubscriber">
+            <argument type="service" id="DigaShopwareCacheHelper\Decorator\LoggingCacheInvalidationSubscriber.inner"/>
+            <argument type="service" id="DigaShopwareCacheHelper\Service\DigaLoggerFactoryService"/>
+            <argument type="service" id="request_stack"/>
+        </service>
+        <service id="DigaShopwareCacheHelper\Decorator\LoggingCacheInvalidator">
+            <argument type="service" id="Shopware\Core\Framework\Adapter\Cache\CacheInvalidator"/>
+            <argument type="service" id="DigaShopwareCacheHelper\Service\DigaLoggerFactoryService"/>
+            <argument type="service" id="request_stack"/>
+        </service>
     </services>
 </container>
