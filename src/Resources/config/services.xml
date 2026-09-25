@@ -15,5 +15,31 @@
             <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>             
             <tag name="kernel.event_subscriber"/>
         </service>
+
+        <service id="DigaShopwareCacheHelper\Invalidation\PluginNamespaceMap">
+            <argument type="service" id="Shopware\Core\Framework\Plugin\KernelPluginCollection"/>
+        </service>
+        <service id="DigaShopwareCacheHelper\Invalidation\InvalidationOriginResolver">
+            <argument type="service" id="DigaShopwareCacheHelper\Invalidation\PluginNamespaceMap"/>
+        </service>
+        <service id="DigaShopwareCacheHelper\Invalidation\InvalidationOriginRecorder">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="DigaShopwareCacheHelper\Invalidation\InvalidationOriginResolver"/>
+            <!-- closure: the logger is only created when there is something to write -->
+            <argument type="service_closure" id="DigaShopwareCacheHelper\Service\DigaLoggerFactoryService"/>
+            <argument type="service" id="request_stack"/>
+            <tag name="kernel.reset" method="reset"/>
+        </service>
+        <!-- deferred invalidations: CacheInvalidator stores the tags here instead of purging them -->
+        <service id="DigaShopwareCacheHelper\Invalidation\TracingInvalidatorStorage"
+                 decorates="Shopware\Core\Framework\Adapter\Cache\InvalidatorStorage\AbstractInvalidatorStorage">
+            <argument type="service" id=".inner"/>
+            <argument type="service" id="DigaShopwareCacheHelper\Invalidation\InvalidationOriginRecorder"/>
+        </service>
+        <!-- immediate invalidations via InvalidateCacheEvent, plus context and flush -->
+        <service id="DigaShopwareCacheHelper\Subscriber\InvalidationOriginSubscriber">
+            <argument type="service" id="DigaShopwareCacheHelper\Invalidation\InvalidationOriginRecorder"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
     </services>
 </container>

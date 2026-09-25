@@ -15,6 +15,12 @@
       "DigaShopwareCacheHelper\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "DigaShopwareCacheHelper\\Tests\\": "tests/",
+      "DigaTestFixture\\": "tests/Fixture/"
+    }
+  },
   "extra": {
     "shopware-plugin-class": "DigaShopwareCacheHelper\\DigaShopwareCacheHelper",
     "label": {

@@ -67,6 +67,33 @@
             <defaultValue>true</defaultValue>
         </input-field>
 
+        <input-field type="bool">
+            <name>logInvalidationOrigin</name>
+            <label>Log invalidation origin</label>
+            <label lang="de-DE">Logge Herkunft der Invalidierung</label>
+            <helpText>Log which plugin caused a cache invalidation and where it was triggered, aggregated once per request, command or worker message</helpText>
+            <helpText lang="de-DE">Protokolliert, welches Plugin eine Cache-Invalidierung verursacht hat und wo sie ausgelöst wurde, zusammengefasst pro Request, Befehl oder Worker-Nachricht</helpText>
+            <defaultValue>false</defaultValue>
+        </input-field>
+
+        <input-field type="int">
+            <name>invalidationOriginMaxTags</name>
+            <label>Max tags per invalidation origin entry</label>
+            <label lang="de-DE">Max. Tags je Herkunfts-Eintrag</label>
+            <helpText>How many tags are listed per log line, the total count is always logged</helpText>
+            <helpText lang="de-DE">Wie viele Tags pro Logzeile aufgelistet werden, die Gesamtzahl wird immer geloggt</helpText>
+            <defaultValue>20</defaultValue>
+        </input-field>
+
+        <input-field type="bool">
+            <name>invalidationOriginLogStack</name>
+            <label>Log plugin call stack for invalidation origin</label>
+            <label lang="de-DE">Logge Plugin-Aufrufkette für Herkunft</label>
+            <helpText>Additionally log all plugin methods in the call stack, not only the first one</helpText>
+            <helpText lang="de-DE">Zusätzlich alle Plugin-Methoden im Aufrufstapel loggen, nicht nur die erste</helpText>
+            <defaultValue>false</defaultValue>
+        </input-field>
+
         <input-field type="single-select">
             <name>loggingOutput</name>
             <label>Logging output</label>

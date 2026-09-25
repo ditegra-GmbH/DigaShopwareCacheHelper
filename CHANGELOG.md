@@ -6,7 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- Log which plugin caused a cache invalidation and where it was triggered (`InvalidationOrigin` log line, config `logInvalidationOrigin`, off by default), including context (route, CLI command, worker message) and mode (immediate / deferred), aggregated once per request
+- Unit tests (`make test`)
 ### Changed
+- `phpunit.xml` bootstraps via the plugin's own `vendor/autoload.php`
 ### Removed
 
 ## [4.0.1] - 26.08.2025
