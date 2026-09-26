@@ -24,6 +24,9 @@ class InvalidationOriginRecorder implements ResetInterface
     // flush early so a long running import cannot grow the buffer without bounds
     private const MAX_BUFFERED_ORIGINS = 200;
 
+    // the storefront RequestTransformer rewrites SEO urls to /detail/<id> and keeps the original url here
+    private const ORIGINAL_REQUEST_URI = 'sw-original-request-uri';
+
     /**
      * @var array{enabled: bool, logStack: bool, maxTags: int, fullUri: bool}|null
      */
@@ -37,6 +40,16 @@ class InvalidationOriginRecorder implements ResetInterface
     private array $buffer = [];
 
     private bool $flushing = false;
+
+    /**
+     * The main request as seen by kernel.request or the HTTP cache. The request stack is empty on a cache hit
+     * (the kernel never runs) and again at kernel.terminate, so it is kept here as fallback for the context.
+     */
+    private ?Request $request = null;
+
+    private ?string $requestNote = null;
+
+    private bool $shutdownFlushRegistered = false;
 
     /**
      * @param \Closure(): DigaLoggerFactoryService $loggerFactory resolved on first flush only
@@ -98,11 +111,24 @@ class InvalidationOriginRecorder implements ResetInterface
             }
             unset($entry);
 
+            $this->registerShutdownFlush();
+
             if (\count($this->buffer) >= self::MAX_BUFFERED_ORIGINS) {
                 $this->flush();
             }
         } catch (\Throwable) {
             // logging must never break a cache invalidation
+        }
+    }
+
+    /**
+     * Remembers the first main request of the cycle; ESI sub requests (header, footer) come later and are ignored.
+     */
+    public function setRequest(Request $request, ?string $note = null): void
+    {
+        if ($this->request === null) {
+            $this->request = $request;
+            $this->requestNote = $note;
         }
     }
 
@@ -139,6 +165,8 @@ class InvalidationOriginRecorder implements ResetInterface
         $this->flush();
         $this->settings = null;
         $this->context = null;
+        $this->request = null;
+        $this->requestNote = null;
     }
 
     /**
@@ -204,11 +232,41 @@ class InvalidationOriginRecorder implements ResetInterface
         return $line;
     }
 
+    /**
+     * Safety net for processes that end without kernel.terminate, console.terminate or a worker event,
+     * most notably a cache hit: Symfony's HttpCache skips kernel.terminate for fresh responses, and PHP-FPM
+     * never calls kernel.reset. Buffered origins would be lost otherwise. flush() is a no-op on an empty buffer.
+     */
+    private function registerShutdownFlush(): void
+    {
+        if ($this->shutdownFlushRegistered) {
+            return;
+        }
+
+        $this->shutdownFlushRegistered = true;
+        register_shutdown_function(function (): void {
+            $this->flush();
+        });
+    }
+
     private function contextFromRequest(bool $fullUri): ?string
     {
         $request = $this->requestStack->getMainRequest();
+        $note = null;
+        if (!$request instanceof Request) {
+            $request = $this->request;
+            $note = $this->requestNote;
+        }
+
         if ($request instanceof Request) {
-            return $request->getMethod() . ' ' . ($fullUri ? $request->getUri() : $request->getRequestUri());
+            $uri = $request->attributes->get(self::ORIGINAL_REQUEST_URI);
+            if (\is_string($uri) && $uri !== '') {
+                $uri = $fullUri ? $request->getSchemeAndHttpHost() . $uri : $uri;
+            } else {
+                $uri = $fullUri ? $request->getUri() : $request->getRequestUri();
+            }
+
+            return $request->getMethod() . ' ' . $uri . ($note !== null ? ' (' . $note . ')' : '');
         }
 
         if (\PHP_SAPI === 'cli' && isset($_SERVER['argv'][1]) && \is_string($_SERVER['argv'][1])) {

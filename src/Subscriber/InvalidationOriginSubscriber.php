@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace DigaShopwareCacheHelper\Subscriber;
 
 use DigaShopwareCacheHelper\Invalidation\InvalidationOriginRecorder;
+use Shopware\Core\Framework\Adapter\Cache\Event\HttpCacheHitEvent;
 use Shopware\Core\Framework\Adapter\Cache\InvalidateCacheEvent;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleCommandEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Messenger\Event\WorkerMessageFailedEvent;
 use Symfony\Component\Messenger\Event\WorkerMessageHandledEvent;
@@ -17,7 +19,8 @@ use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
 /**
  * Records immediate invalidations, tells the recorder in which context (command, worker message)
  * invalidations happen and flushes its buffer once the request, command or message is done.
- * HTTP requests need no context here, the recorder reads the main request itself.
+ * HTTP requests are remembered on kernel.request and on cache hits, because the request stack is empty
+ * at kernel.terminate and on a cache hit the kernel does not run at all.
  */
 class InvalidationOriginSubscriber implements EventSubscriberInterface
 {
@@ -31,6 +34,8 @@ class InvalidationOriginSubscriber implements EventSubscriberInterface
             InvalidateCacheEvent::class => 'onInvalidateCache',
             ConsoleEvents::COMMAND => 'onConsoleCommand',
             WorkerMessageReceivedEvent::class => 'onWorkerMessageReceived',
+            KernelEvents::REQUEST => ['onRequest', 4096],
+            HttpCacheHitEvent::class => 'onCacheHit',
             // flush late, so invalidations from other terminate listeners are still included
             KernelEvents::TERMINATE => ['flush', -10000],
             ConsoleEvents::TERMINATE => ['flush', -10000],
@@ -48,6 +53,21 @@ class InvalidationOriginSubscriber implements EventSubscriberInterface
         if ($this->recorder->isEnabled()) {
             $this->recorder->record($event->getKeys(), InvalidationOriginRecorder::MODE_IMMEDIATE);
         }
+    }
+
+    public function onRequest(RequestEvent $event): void
+    {
+        if ($event->isMainRequest()) {
+            $this->recorder->setRequest($event->getRequest());
+        }
+    }
+
+    /**
+     * On a cache hit only the HTTP cache runs; listeners of this event can still invalidate.
+     */
+    public function onCacheHit(HttpCacheHitEvent $event): void
+    {
+        $this->recorder->setRequest($event->request, 'cache hit');
     }
 
     public function onConsoleCommand(ConsoleCommandEvent $event): void

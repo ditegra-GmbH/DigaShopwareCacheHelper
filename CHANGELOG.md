@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Log which plugin caused a cache invalidation and where it was triggered (`InvalidationOrigin` log line, config `logInvalidationOrigin`, off by default), including context (route, CLI command, worker message) and mode (immediate / deferred), aggregated once per request
 - Unit tests (`make test`)
 ### Changed
+- Invalidation origin: invalidations during an HTTP cache hit are logged (flush in a shutdown function, context marked `(cache hit)`); invalidations at `kernel.terminate` keep the request context instead of `unknown`; the context shows the original SEO url instead of `/detail/<id>`
 - `phpunit.xml` bootstraps via the plugin's own `vendor/autoload.php`
 ### Removed
 

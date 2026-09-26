@@ -94,11 +94,12 @@ The plugin hooks in at two officially extendable points. Both run while `CacheIn
 
 | Process | Context set by | Flushed on |
 | --- | --- | --- |
-| HTTP request | main request, read at the first recorded invalidation | `kernel.terminate` (after the response was sent) |
+| HTTP request | main request, remembered on `kernel.request` (original SEO url) | `kernel.terminate` (after the response was sent) |
+| HTTP cache hit | request of `HttpCacheHitEvent`, marked `(cache hit)` | shutdown function (Symfony skips `kernel.terminate` for cache hits) |
 | Console command | `console.command` | `console.terminate` |
 | Messenger worker | `WorkerMessageReceivedEvent` | `WorkerMessageHandledEvent`, `WorkerMessageFailedEvent` |
 
-It also flushes when 200 different origins are buffered, and on `kernel.reset`.
+It also flushes when 200 different origins are buffered, on `kernel.reset`, and in a shutdown function as safety net, which is registered on the first buffered origin. That covers processes that end without any of the events above, most notably a cache hit: the kernel does not run, so there is no `kernel.terminate`, and PHP-FPM never calls `kernel.reset`.
 
 ## Performance
 

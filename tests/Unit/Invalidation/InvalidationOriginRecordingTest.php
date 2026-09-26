@@ -18,6 +18,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Shopware\Core\Framework\Adapter\Cache\CacheInvalidator;
+use Shopware\Core\Framework\Adapter\Cache\Event\HttpCacheHitEvent;
 use Shopware\Core\Framework\Adapter\Cache\InvalidatorStorage\AbstractInvalidatorStorage;
 use Shopware\Core\Framework\Plugin\KernelPluginCollection;
 use Shopware\Core\Framework\Util\Backtrace\BacktraceCollector;
@@ -28,6 +29,9 @@ use Symfony\Component\Clock\NativeClock;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Event\WorkerMessageReceivedEvent;
 
@@ -118,6 +122,44 @@ class InvalidationOriginRecordingTest extends TestCase
         );
     }
 
+    public function testRequestContextIsKeptForInvalidationsAtKernelTerminate(): void
+    {
+        $this->boot();
+        $request = Request::create('/detail/11dc680240b04f469ccba354cbf0b967');
+        $request->attributes->set('sw-original-request-uri', '/Hauptprodukt-mit-erweiterten-Preisen/SWDEMO10002');
+
+        // kernel.request of the main request, then an ESI sub request which must not replace it
+        $this->subscriber->onRequest($this->requestEvent($request));
+        $this->subscriber->onRequest($this->requestEvent(Request::create('/widgets/menu/offcanvas')));
+
+        // at kernel.terminate the request stack is already empty
+        (new ProductImporter())->import($this->cacheInvalidator, 'p1');
+        $this->subscriber->flush();
+
+        static::assertStringStartsWith(
+            'InvalidationOrigin | GET /Hauptprodukt-mit-erweiterten-Preisen/SWDEMO10002 | ErpSync |',
+            $this->onlyMessage()
+        );
+    }
+
+    public function testCacheHitSetsContext(): void
+    {
+        $this->config['DigaShopwareCacheHelper.config.logFullUri'] = true;
+        $this->boot();
+
+        $item = (new ArrayAdapter())->getItem('http-cache-test');
+        $this->subscriber->onCacheHit(new HttpCacheHitEvent($item, Request::create('http://localhost/Hauptartikel/SWDEMO10001'), new Response()));
+        $this->subscriber->onCacheHit(new HttpCacheHitEvent($item, Request::create('http://localhost/header'), new Response()));
+
+        (new ProductImporter())->import($this->cacheInvalidator, 'p1');
+        $this->subscriber->flush();
+
+        static::assertStringStartsWith(
+            'InvalidationOrigin | GET http://localhost/Hauptartikel/SWDEMO10001 (cache hit) | ErpSync |',
+            $this->onlyMessage()
+        );
+    }
+
     public function testScheduledPurgeOfDeferredTagsIsNotRecordedAgain(): void
     {
         $this->boot();
@@ -185,6 +227,11 @@ class InvalidationOriginRecordingTest extends TestCase
         $this->subscriber->flush();
 
         static::assertStringStartsWith('InvalidationOrigin | worker: stdClass | ErpSync |', $this->onlyMessage());
+    }
+
+    private function requestEvent(Request $request): RequestEvent
+    {
+        return new RequestEvent($this->createMock(HttpKernelInterface::class), $request, HttpKernelInterface::MAIN_REQUEST);
     }
 
     private function onlyMessage(): string
