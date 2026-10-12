@@ -5,9 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [4.1.0] - 12.10.2026
 ### Added
+- Log which plugin caused a cache invalidation and where it was triggered (`InvalidationOrigin` log line, config `logInvalidationOrigin`, off by default), including context (route, CLI command, worker message) and mode (immediate / deferred), aggregated once per request
+- Unit tests (`make test`)
 ### Changed
-### Removed
+- Invalidation origin: invalidations during an HTTP cache hit are logged (flush in a shutdown function, context marked `(cache hit)`); invalidations at `kernel.terminate` keep the request context instead of `unknown`; the context shows the original SEO url instead of `/detail/<id>`
+- `phpunit.xml` bootstraps via the plugin's own `vendor/autoload.php`
+### Fixed
+- Removed usage of `HttpCacheKeyGenerator::CURRENCY_COOKIE`, deprecated since Shopware v6.8.0 (the value is already part of the `sw-cache-hash` cache cookie), which was failing the PHPStan pipeline step
 
 ## [4.0.1] - 26.08.2025
 ### Changed

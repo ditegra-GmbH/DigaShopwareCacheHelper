@@ -1,7 +1,7 @@
 {
   "name": "diga/shopwarecachehelper-plugin",
   "description": "shopwarecachehelper Plugin",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "type": "shopware-platform-plugin",
   "license": "proprietary",
   "authors": [
@@ -13,6 +13,12 @@
   "autoload": {
     "psr-4": {
       "DigaShopwareCacheHelper\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "DigaShopwareCacheHelper\\Tests\\": "tests/",
+      "DigaTestFixture\\": "tests/Fixture/"
     }
   },
   "extra": {
@@ -47,7 +53,8 @@
   },
   "config": {
     "allow-plugins": {
-      "symfony/runtime": true
+      "symfony/runtime": true,
+	  "php-http/discovery": true
     }
   }
 }

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd" bootstrap="../../../src/TestBootstrap.php" cacheResult="false">
-  <coverage>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd" bootstrap="vendor/autoload.php" cacheResult="false">
+  <source>
     <include>
-      <directory suffix=".php">./</directory>
+      <directory suffix=".php">./src</directory>
     </include>
-  </coverage>
+  </source>
   <testsuites>
-    <testsuite name="DigaShopwareCacheHelper  Sample Plugin Tests">
-      <directory>tests/</directory>
+    <testsuite name="DigaShopwareCacheHelper Unit Tests">
+      <directory>tests/Unit</directory>
     </testsuite>
   </testsuites>
 </phpunit>

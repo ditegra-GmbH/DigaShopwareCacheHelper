@@ -135,13 +135,6 @@ class CacheEventsSubscriber implements EventSubscriberInterface
                     return;
                 }
 
-                if ($cookies->has(HttpCacheKeyGenerator::CURRENCY_COOKIE)) {
-                    $val = $cookies->get(HttpCacheKeyGenerator::CURRENCY_COOKIE);
-                    $httpCacheKey = 'http-cache-' . hash('sha256', $hash . '-' . $val);
-                    $this->logger->info('HttpCacheGenerateKeyEvent | ' . $requestUri .' |  |  key ' .  $httpCacheKey . ' ' . HttpCacheKeyGenerator::CURRENCY_COOKIE . ': ' . $val);
-                    return;
-                }
-
                 if ($attributes->has(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID)) {
                     $val = $attributes->get(SalesChannelRequest::ATTRIBUTE_DOMAIN_CURRENCY_ID);
                     $httpCacheKey =  'http-cache-' . hash('sha256', $hash . '-' . $val);
